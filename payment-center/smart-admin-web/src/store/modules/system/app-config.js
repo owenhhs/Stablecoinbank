@@ -20,7 +20,10 @@ let language = appDefaultConfig.language;
 if (appConfigStr) {
   try {
     state = JSON.parse(appConfigStr);
-    language = state.language;
+    // 强制使用英文作为默认语言，忽略本地存储的语言设置
+    // language = state.language;
+    language = appDefaultConfig.language; // 强制使用英文
+    state.language = appDefaultConfig.language; // 强制覆盖状态中的语言设置
   } catch (e) {
     smartSentry.captureError(e);
   }
