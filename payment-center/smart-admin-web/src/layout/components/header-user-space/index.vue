@@ -10,6 +10,8 @@
 <template>
   <a-space :size="10">
     <div class="setting">
+      <!---语言切换--->
+      <LanguageSelector />
       <!---设置--->
       <a-button type="text" @click="showSetting" class="operate-icon">
         <template #icon><setting-outlined /></template>
@@ -28,6 +30,7 @@
 <script setup>
   import HeaderAvatar from './header-avatar.vue';
   import HeaderSetting from './header-setting.vue';
+  import LanguageSelector from '/@/components/framework/LanguageSelector.vue';
   import { computed, ref } from 'vue';
   import { theme } from 'ant-design-vue';
 

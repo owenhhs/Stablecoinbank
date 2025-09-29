@@ -9,7 +9,7 @@
  */
 export const appDefaultConfig = {
   // i18n 语言选择
-  language: 'zh_CN',
+  language: 'en_US',
   // 布局: side 或者 side-expand 或者 top
   layout: 'side',
   // 侧边菜单宽度 ， 默认为200px

@@ -1083,4 +1083,74 @@ CREATE TABLE `t_payment_order_info`  (
   INDEX `idx_account_name_hash`(`account_name_hash`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '支付订单信息表' ROW_FORMAT = Dynamic;
 
+-- ----------------------------
+-- Table structure for t_i18n_language
+-- ----------------------------
+DROP TABLE IF EXISTS `t_i18n_language`;
+CREATE TABLE `t_i18n_language`  (
+  `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `language_code` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '语言代码',
+  `language_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '语言名称',
+  `native_name` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '本地语言名称',
+  `flag_emoji` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '国旗表情符号',
+  `is_default` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否默认语言',
+  `sort_order` int(0) NULL DEFAULT 0 COMMENT '排序',
+  `status` int(0) NOT NULL DEFAULT 1 COMMENT '状态(0-禁用，1-启用)',
+  `create_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uk_language_code`(`language_code`) USING BTREE,
+  INDEX `idx_status`(`status`) USING BTREE,
+  INDEX `idx_sort_order`(`sort_order`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '多语言配置表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for t_i18n_message
+-- ----------------------------
+DROP TABLE IF EXISTS `t_i18n_message`;
+CREATE TABLE `t_i18n_message`  (
+  `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `message_key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '消息键',
+  `language_code` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '语言代码',
+  `message_value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '消息值',
+  `category` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '分类',
+  `module` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '模块',
+  `create_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `uk_key_language`(`message_key`, `language_code`) USING BTREE,
+  INDEX `idx_language_code`(`language_code`) USING BTREE,
+  INDEX `idx_category`(`category`) USING BTREE,
+  INDEX `idx_module`(`module`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '多语言消息表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of t_i18n_language
+-- ----------------------------
+INSERT INTO `t_i18n_language` VALUES (1, 'en_US', 'English', 'English', '🇺🇸', 1, 1, 1, '2024-09-29 16:00:00', '2024-09-29 16:00:00');
+INSERT INTO `t_i18n_language` VALUES (2, 'zh_CN', 'Chinese (Simplified)', '简体中文', '🇨🇳', 0, 2, 1, '2024-09-29 16:00:00', '2024-09-29 16:00:00');
+INSERT INTO `t_i18n_language` VALUES (3, 'fr_FR', 'French', 'Français', '🇫🇷', 0, 3, 1, '2024-09-29 16:00:00', '2024-09-29 16:00:00');
+INSERT INTO `t_i18n_language` VALUES (4, 'es_ES', 'Spanish', 'Español', '🇪🇸', 0, 4, 1, '2024-09-29 16:00:00', '2024-09-29 16:00:00');
+INSERT INTO `t_i18n_language` VALUES (5, 'pt_PT', 'Portuguese', 'Português', '🇵🇹', 0, 5, 1, '2024-09-29 16:00:00', '2024-09-29 16:00:00');
+
+-- ----------------------------
+-- Records of t_i18n_message
+-- ----------------------------
+INSERT INTO `t_i18n_message` VALUES (1, 'common.login', 'en_US', 'Login', 'common', 'system', '2024-09-29 16:00:00', '2024-09-29 16:00:00');
+INSERT INTO `t_i18n_message` VALUES (2, 'common.logout', 'en_US', 'Logout', 'common', 'system', '2024-09-29 16:00:00', '2024-09-29 16:00:00');
+INSERT INTO `t_i18n_message` VALUES (3, 'common.submit', 'en_US', 'Submit', 'common', 'system', '2024-09-29 16:00:00', '2024-09-29 16:00:00');
+INSERT INTO `t_i18n_message` VALUES (4, 'common.cancel', 'en_US', 'Cancel', 'common', 'system', '2024-09-29 16:00:00', '2024-09-29 16:00:00');
+INSERT INTO `t_i18n_message` VALUES (5, 'payment.order.title', 'en_US', 'Payment Order Management', 'payment', 'business', '2024-09-29 16:00:00', '2024-09-29 16:00:00');
+INSERT INTO `t_i18n_message` VALUES (6, 'payment.channel.title', 'en_US', 'Payment Channel Management', 'payment', 'business', '2024-09-29 16:00:00', '2024-09-29 16:00:00');
+INSERT INTO `t_i18n_message` VALUES (7, 'status.enable', 'en_US', 'Enable', 'status', 'system', '2024-09-29 16:00:00', '2024-09-29 16:00:00');
+INSERT INTO `t_i18n_message` VALUES (8, 'status.disable', 'en_US', 'Disable', 'status', 'system', '2024-09-29 16:00:00', '2024-09-29 16:00:00');
+INSERT INTO `t_i18n_message` VALUES (9, 'common.login', 'zh_CN', '登录', 'common', 'system', '2024-09-29 16:00:00', '2024-09-29 16:00:00');
+INSERT INTO `t_i18n_message` VALUES (10, 'common.logout', 'zh_CN', '退出', 'common', 'system', '2024-09-29 16:00:00', '2024-09-29 16:00:00');
+INSERT INTO `t_i18n_message` VALUES (11, 'common.submit', 'zh_CN', '提交', 'common', 'system', '2024-09-29 16:00:00', '2024-09-29 16:00:00');
+INSERT INTO `t_i18n_message` VALUES (12, 'common.cancel', 'zh_CN', '取消', 'common', 'system', '2024-09-29 16:00:00', '2024-09-29 16:00:00');
+INSERT INTO `t_i18n_message` VALUES (13, 'payment.order.title', 'zh_CN', '支付订单管理', 'payment', 'business', '2024-09-29 16:00:00', '2024-09-29 16:00:00');
+INSERT INTO `t_i18n_message` VALUES (14, 'payment.channel.title', 'zh_CN', '支付渠道管理', 'payment', 'business', '2024-09-29 16:00:00', '2024-09-29 16:00:00');
+INSERT INTO `t_i18n_message` VALUES (15, 'status.enable', 'zh_CN', '启用', 'status', 'system', '2024-09-29 16:00:00', '2024-09-29 16:00:00');
+INSERT INTO `t_i18n_message` VALUES (16, 'status.disable', 'zh_CN', '禁用', 'status', 'system', '2024-09-29 16:00:00', '2024-09-29 16:00:00');
+
 SET FOREIGN_KEY_CHECKS = 1;
