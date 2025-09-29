@@ -79,4 +79,33 @@ export default {
   'status.completed': '已完成',
   'status.cancelled': '已取消',
   'status.expired': '已过期',
+  
+  // 登录相关
+  'login.title': '账号登录',
+  'login.welcome.title': '欢迎登录 SmartAdmin V3',
+  'login.username.placeholder': '请输入用户名',
+  'login.password.placeholder': '请输入密码：至少三种字符，最小 8 位',
+  'login.captcha.placeholder': '请输入验证码',
+  'login.remember': '记住密码',
+  'login.demo.account': '账号：admin, 密码：123456',
+  'login.submit': '登录',
+  'login.other.ways': '其他方式登录',
+  'login.validation.username': '用户名不能为空',
+  'login.validation.password': '密码不能为空',
+  'login.validation.captcha': '验证码不能为空',
+  
+  // 首页相关
+  'home.department': '所属部门',
+  'common.home': '首页',
+  
+  // 设置相关
+  'setting.language': '语言',
+  'setting.compact.default': '默认',
+  'setting.compact.compact': '紧凑',
+  'setting.unit.pixel': '像素（px）',
+  'setting.unit.pixel_or_percent': '像素（px）或者 百分比',
+  'setting.show': '显示',
+  'setting.hide': '隐藏',
+  'setting.copy.config': '复制配置信息',
+  'setting.reset.default': '恢复默认配置',
 };

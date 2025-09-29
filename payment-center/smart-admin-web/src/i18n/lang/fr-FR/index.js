@@ -77,4 +77,33 @@ export default {
   'status.completed': 'Terminé',
   'status.cancelled': 'Annulé',
   'status.expired': 'Expiré',
+  
+  // 登录相关
+  'login.title': 'Connexion au compte',
+  'login.welcome.title': 'Bienvenue sur SmartAdmin V3',
+  'login.username.placeholder': 'Veuillez saisir le nom d\'utilisateur',
+  'login.password.placeholder': 'Veuillez saisir le mot de passe : au moins 3 types de caractères, minimum 8 chiffres',
+  'login.captcha.placeholder': 'Veuillez saisir le code de vérification',
+  'login.remember': 'Se souvenir du mot de passe',
+  'login.demo.account': 'Compte : admin, Mot de passe : 123456',
+  'login.submit': 'Se connecter',
+  'login.other.ways': 'Autres méthodes de connexion',
+  'login.validation.username': 'Le nom d\'utilisateur ne peut pas être vide',
+  'login.validation.password': 'Le mot de passe ne peut pas être vide',
+  'login.validation.captcha': 'Le code de vérification ne peut pas être vide',
+  
+  // 首页相关
+  'home.department': 'Département',
+  'common.home': 'Accueil',
+  
+  // 设置相关
+  'setting.language': 'Langue',
+  'setting.compact.default': 'Par défaut',
+  'setting.compact.compact': 'Compact',
+  'setting.unit.pixel': 'pixel (px)',
+  'setting.unit.pixel_or_percent': 'pixel (px) ou pourcentage',
+  'setting.show': 'Afficher',
+  'setting.hide': 'Masquer',
+  'setting.copy.config': 'Copier la configuration',
+  'setting.reset.default': 'Restaurer par défaut',
 };

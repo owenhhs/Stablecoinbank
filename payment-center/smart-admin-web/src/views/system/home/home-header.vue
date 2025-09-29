@@ -12,7 +12,7 @@
   <div class="user-header">
     <a-page-header :title="welcomeSentence">
       <template #subTitle>
-        <span style="color: #666; margin-left: 20px">所属部门：{{ departmentName }} </span>
+        <span style="color: #666; margin-left: 20px">{{ $t('home.department') }}：{{ departmentName }} </span>
       </template>
       <template #extra>
         <p style="color: #333">{{ dayInfo }}</p>

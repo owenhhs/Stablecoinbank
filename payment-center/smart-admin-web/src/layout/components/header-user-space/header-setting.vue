@@ -40,8 +40,8 @@
       </a-form-item>
       <a-form-item :label="$t('setting.compact')">
         <a-radio-group v-model:value="formState.compactFlag" button-style="solid" @change="changeCompactFlag">
-          <a-radio-button :value="false">默认</a-radio-button>
-          <a-radio-button :value="true">紧凑</a-radio-button>
+          <a-radio-button :value="false">{{ $t('setting.compact.default') }}</a-radio-button>
+          <a-radio-button :value="true">{{ $t('setting.compact.compact') }}</a-radio-button>
         </a-radio-group>
       </a-form-item>
       <a-form-item :label="$t('setting.menu.layout')">
@@ -59,36 +59,36 @@
       </a-form-item>
       <a-form-item :label="$t('setting.menu.width')" v-if="formState.layout === LAYOUT_ENUM.SIDE.value">
         <a-input-number @change="changeSideMenuWidth" v-model:value="formState.sideMenuWidth" :min="1" />
-        像素（px）
+        {{ $t('setting.unit.pixel') }}
       </a-form-item>
       <a-form-item :label="$t('setting.page.width')" v-if="formState.layout === LAYOUT_ENUM.TOP.value">
         <a-input @change="changePageWidth" v-model:value="formState.pageWidth" />
-        像素（px）或者 百分比
+        {{ $t('setting.unit.pixel_or_percent') }}
       </a-form-item>
-      <a-form-item label="语言/Language">
+      <a-form-item :label="$t('setting.language')">
         <a-select v-model:value="formState.language" @change="changeLanguage" style="width: 120px">
           <a-select-option v-for="item in i18nList" :key="item.value" :value="item.value">{{ item.text }}</a-select-option>
         </a-select>
       </a-form-item>
       <a-form-item :label="$t('setting.bread')">
-        <a-switch @change="changeBreadCrumbFlag" v-model:checked="formState.breadCrumbFlag" checked-children="显示" un-checked-children="隐藏" />
+        <a-switch @change="changeBreadCrumbFlag" v-model:checked="formState.breadCrumbFlag" :checked-children="$t('setting.show')" :un-checked-children="$t('setting.hide')" />
       </a-form-item>
       <a-form-item :label="$t('setting.pagetag')">
-        <a-switch @change="changePageTagFlag" v-model:checked="formState.pageTagFlag" checked-children="显示" un-checked-children="隐藏" />
+        <a-switch @change="changePageTagFlag" v-model:checked="formState.pageTagFlag" :checked-children="$t('setting.show')" :un-checked-children="$t('setting.hide')" />
       </a-form-item>
       <a-form-item :label="$t('setting.footer')">
-        <a-switch @change="changeFooterFlag" v-model:checked="formState.footerFlag" checked-children="显示" un-checked-children="隐藏" />
+        <a-switch @change="changeFooterFlag" v-model:checked="formState.footerFlag" :checked-children="$t('setting.show')" :un-checked-children="$t('setting.hide')" />
       </a-form-item>
       <a-form-item :label="$t('setting.helpdoc')">
-        <a-switch @change="changeHelpDocFlag" v-model:checked="formState.helpDocFlag" checked-children="显示" un-checked-children="隐藏" />
+        <a-switch @change="changeHelpDocFlag" v-model:checked="formState.helpDocFlag" :checked-children="$t('setting.show')" :un-checked-children="$t('setting.hide')" />
       </a-form-item>
       <a-form-item :label="$t('setting.watermark')">
-        <a-switch @change="changeWatermarkFlag" v-model:checked="formState.watermarkFlag" checked-children="显示" un-checked-children="隐藏" />
+        <a-switch @change="changeWatermarkFlag" v-model:checked="formState.watermarkFlag" :checked-children="$t('setting.show')" :un-checked-children="$t('setting.hide')" />
       </a-form-item>
     </a-form>
     <div class="footer">
-      <a-button style="margin-right: 8px" type="primary" @click="copy">复制配置信息</a-button>
-      <a-button type="block" danger @click="reset">恢复默认配置 </a-button>
+      <a-button style="margin-right: 8px" type="primary" @click="copy">{{ $t('setting.copy.config') }}</a-button>
+      <a-button type="block" danger @click="reset">{{ $t('setting.reset.default') }}</a-button>
     </div>
   </a-drawer>
 </template>

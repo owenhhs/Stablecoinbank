@@ -12,7 +12,7 @@
   <div class="login-container">
     <div class="box-item desc">
       <div class="welcome">
-        <p>欢迎登录 SmartAdmin V3</p>
+        <p>{{ $t('login.welcome.title') }}</p>
         <p class="desc">
           SmartAdmin 是由 河南·洛阳
           <a target="_blank" href="https://www.1024lab.net" style="color: white; weight: bolder; font-size: 15px; text-decoration: underline"
@@ -54,35 +54,38 @@
     </div>
     <div class="box-item login">
       <img class="login-qr" :src="loginQR" />
-      <div class="login-title">账号登录</div>
+      <div class="login-header">
+        <div class="login-title">{{ $t('login.title') }}</div>
+        <LanguageSelector />
+      </div>
       <a-form ref="formRef" class="login-form" :model="loginForm" :rules="rules">
         <a-form-item name="loginName">
-          <a-input v-model:value.trim="loginForm.loginName" placeholder="请输入用户名" />
+          <a-input v-model:value.trim="loginForm.loginName" :placeholder="$t('login.username.placeholder')" />
         </a-form-item>
         <a-form-item name="password">
           <a-input-password
             v-model:value="loginForm.password"
             autocomplete="on"
             :type="showPassword ? 'text' : 'password'"
-            placeholder="请输入密码：至少三种字符，最小 8 位"
+            :placeholder="$t('login.password.placeholder')"
           />
         </a-form-item>
         <a-form-item name="captchaCode">
-          <a-input class="captcha-input" v-model:value.trim="loginForm.captchaCode" placeholder="请输入验证码" />
+          <a-input class="captcha-input" v-model:value.trim="loginForm.captchaCode" :placeholder="$t('login.captcha.placeholder')" />
           <img class="captcha-img" :src="captchaBase64Image" @click="getCaptcha" />
         </a-form-item>
         <a-form-item>
-          <a-checkbox v-model:checked="rememberPwd">记住密码</a-checkbox>
-          <span> ( 账号：admin, 密码：123456)</span>
+          <a-checkbox v-model:checked="rememberPwd">{{ $t('login.remember') }}</a-checkbox>
+          <span> ( {{ $t('login.demo.account') }} )</span>
         </a-form-item>
         <a-form-item>
-          <div class="btn" @click="onLogin">登录</div>
+          <div class="btn" @click="onLogin">{{ $t('login.submit') }}</div>
         </a-form-item>
       </a-form>
       <div class="more">
         <div class="title-box">
           <p class="line"></p>
-          <p class="title">其他方式登录</p>
+          <p class="title">{{ $t('login.other.ways') }}</p>
           <p class="line"></p>
         </div>
         <div class="login-type">
@@ -102,7 +105,9 @@
   import { message, notification, Button } from 'ant-design-vue';
   import { onMounted, onUnmounted, reactive, ref } from 'vue';
   import { useRouter } from 'vue-router';
+  import { useI18n } from 'vue-i18n';
   import { loginApi } from '/@/api/system/login-api';
+  import LanguageSelector from '/@/components/framework/LanguageSelector.vue';
   import { SmartLoading } from '/@/components/framework/smart-loading';
   import { LOGIN_DEVICE_ENUM } from '/@/constants/system/login-device-const';
   import { useUserStore } from '/@/store/modules/system/user';
@@ -125,6 +130,7 @@
   import LocalStorageKeyConst from '/@/constants/local-storage-key-const.js';
 
   //--------------------- 登录表单 ---------------------------------
+  const { t } = useI18n();
 
   const loginForm = reactive({
     loginName: 'admin',
@@ -134,9 +140,9 @@
     loginDevice: LOGIN_DEVICE_ENUM.PC.value,
   });
   const rules = {
-    loginName: [{ required: true, message: '用户名不能为空' }],
-    password: [{ required: true, message: '密码不能为空' }],
-    captchaCode: [{ required: true, message: '验证码不能为空' }],
+    loginName: [{ required: true, message: t('login.validation.username') }],
+    password: [{ required: true, message: t('login.validation.password') }],
+    captchaCode: [{ required: true, message: t('login.validation.captcha') }],
   };
 
   const showPassword = ref(false);
@@ -237,4 +243,17 @@
 </script>
 <style lang="less" scoped>
   @import './login.less';
+  
+  .login-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    
+    .login-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+    }
+  }
 </style>

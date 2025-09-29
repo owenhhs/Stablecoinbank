@@ -77,4 +77,33 @@ export default {
   'status.completed': 'Completado',
   'status.cancelled': 'Cancelado',
   'status.expired': 'Expirado',
+  
+  // 登录相关
+  'login.title': 'Inicio de sesión de cuenta',
+  'login.welcome.title': 'Bienvenido a SmartAdmin V3',
+  'login.username.placeholder': 'Por favor ingrese el nombre de usuario',
+  'login.password.placeholder': 'Por favor ingrese la contraseña: al menos 3 tipos de caracteres, mínimo 8 dígitos',
+  'login.captcha.placeholder': 'Por favor ingrese el código de verificación',
+  'login.remember': 'Recordar contraseña',
+  'login.demo.account': 'Cuenta: admin, Contraseña: 123456',
+  'login.submit': 'Iniciar sesión',
+  'login.other.ways': 'Otros métodos de inicio de sesión',
+  'login.validation.username': 'El nombre de usuario no puede estar vacío',
+  'login.validation.password': 'La contraseña no puede estar vacía',
+  'login.validation.captcha': 'El código de verificación no puede estar vacío',
+  
+  // 首页相关
+  'home.department': 'Departamento',
+  'common.home': 'Inicio',
+  
+  // 设置相关
+  'setting.language': 'Idioma',
+  'setting.compact.default': 'Por defecto',
+  'setting.compact.compact': 'Compacto',
+  'setting.unit.pixel': 'píxel (px)',
+  'setting.unit.pixel_or_percent': 'píxel (px) o porcentaje',
+  'setting.show': 'Mostrar',
+  'setting.hide': 'Ocultar',
+  'setting.copy.config': 'Copiar configuración',
+  'setting.reset.default': 'Restaurar por defecto',
 };
