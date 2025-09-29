@@ -392,14 +392,55 @@
 #### 请求参数
 ```json
 {
-  "channelName": "新支付渠道",
-  "channelCode": "NEW001",
-  "channelType": "qrcode",
-  "feeRate": 0.005,
-  "configJson": "{\"appId\":\"123\",\"appSecret\":\"456\"}",
-  "remark": "新渠道备注"
+  "merName": "新支付渠道",
+  "merCode": "NEW001",
+  "merAk": "商户号",
+  "merSk": "商户秘钥",
+  "domain": "https://example.com",
+  "ext": "{\"appId\":\"123\",\"appSecret\":\"456\"}",
+  "merUsername": "渠道持有人",
+  "phone": "13800138000",
+  "idNumber": "身份证号",
+  "paymentFlag": 1,
+  "paymentScale": 100,
+  "paymentLimit": 10000.00,
+  "paymentCount": 1000,
+  "cashFlag": 1,
+  "cashScale": 90,
+  "cashLimit": 5000.00,
+  "cashCount": 500,
+  "workTime": "09:00-18:00",
+  "interfaceType": 1,
+  "implCode": "BANK_001",
+  "xjFlag": 0,
+  "status": 1
 }
 ```
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| merName | String | 是 | 商户名称 |
+| merCode | String | 是 | 商户编码 |
+| merAk | String | 是 | 商户号 |
+| merSk | String | 是 | 商户秘钥 |
+| domain | String | 否 | 域名 |
+| ext | String | 否 | 额外配置信息JSON |
+| merUsername | String | 否 | 商户持有人姓名 |
+| phone | String | 否 | 绑定手机号 |
+| idNumber | String | 否 | 证件号 |
+| paymentFlag | Integer | 否 | 支付标志 |
+| paymentScale | Integer | 否 | 支付比例 |
+| paymentLimit | Decimal | 否 | 支付限额 |
+| paymentCount | Integer | 否 | 支付笔数限制 |
+| cashFlag | Integer | 否 | 兑付标志 |
+| cashScale | Integer | 否 | 兑付比例 |
+| cashLimit | Decimal | 否 | 兑付限额 |
+| cashCount | Integer | 否 | 兑付笔数限制 |
+| workTime | String | 否 | 工作时间 |
+| interfaceType | Integer | 否 | 接口类型(1-API方式，2-非API方式) |
+| implCode | String | 否 | 实现类关联值 |
+| xjFlag | Integer | 否 | 是否支持新疆用户(0-不支持 1-支持) |
+| status | Integer | 否 | 状态(0-禁用；1-启用) |
 
 #### 响应参数
 ```json
@@ -409,6 +450,77 @@
   "data": {
     "channelId": 2
   }
+}
+```
+
+### 5.3 更新支付渠道
+- **接口地址**: `/paymentChannel/update`
+- **请求方式**: `POST`
+- **接口描述**: 更新支付渠道信息
+
+#### 请求参数
+```json
+{
+  "id": 1,
+  "merName": "更新后的渠道名称",
+  "merCode": "UPD001",
+  "status": 1
+}
+```
+
+#### 响应参数
+```json
+{
+  "code": 1,
+  "msg": "支付渠道更新成功",
+  "data": null
+}
+```
+
+### 5.4 删除支付渠道
+- **接口地址**: `/paymentChannel/delete/{channelId}`
+- **请求方式**: `DELETE`
+- **接口描述**: 删除支付渠道
+
+#### 请求参数
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| channelId | Long | 是 | 渠道ID |
+
+#### 响应参数
+```json
+{
+  "code": 1,
+  "msg": "支付渠道删除成功",
+  "data": null
+}
+```
+
+### 5.5 获取渠道选项列表
+- **接口地址**: `/paymentChannel/options`
+- **请求方式**: `GET`
+- **接口描述**: 获取渠道选项列表，用于下拉选择
+
+#### 请求参数
+无
+
+#### 响应参数
+```json
+{
+  "code": 1,
+  "msg": "获取成功",
+  "data": [
+    {
+      "channelId": 1,
+      "channelName": "银行渠道1",
+      "merCode": "BANK001"
+    },
+    {
+      "channelId": 2,
+      "channelName": "二维码渠道1", 
+      "merCode": "QR001"
+    }
+  ]
 }
 ```
 
@@ -491,9 +603,101 @@
 }
 ```
 
-## 7. 系统管理接口
+## 7. 多因子认证接口
 
-### 7.1 获取用户信息
+### 7.1 获取OTP二维码
+- **接口地址**: `/employee/otp/qrcode`
+- **请求方式**: `GET`
+- **接口描述**: 获取OTP绑定二维码
+
+#### 请求参数
+无
+
+#### 响应参数
+```json
+{
+  "code": 1,
+  "msg": "获取成功",
+  "data": {
+    "qrCodeUrl": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA...",
+    "secretKey": "JBSWY3DPEHPK3PXP",
+    "manualKey": "JBSWY3DPEHPK3PXP"
+  }
+}
+```
+
+### 7.2 绑定OTP
+- **接口地址**: `/employee/otp/bind`
+- **请求方式**: `POST`
+- **接口描述**: 绑定OTP验证器
+
+#### 请求参数
+```json
+{
+  "secretKey": "JBSWY3DPEHPK3PXP",
+  "verifyCode": "123456"
+}
+```
+
+| 参数名 | 类型 | 必填 | 说明 |
+|--------|------|------|------|
+| secretKey | String | 是 | 秘钥 |
+| verifyCode | String | 是 | 验证码 |
+
+#### 响应参数
+```json
+{
+  "code": 1,
+  "msg": "OTP绑定成功",
+  "data": null
+}
+```
+
+### 7.3 验证OTP
+- **接口地址**: `/employee/otp/verify`
+- **请求方式**: `POST`
+- **接口描述**: 验证OTP验证码
+
+#### 请求参数
+```json
+{
+  "verifyCode": "123456"
+}
+```
+
+#### 响应参数
+```json
+{
+  "code": 1,
+  "msg": "验证成功",
+  "data": null
+}
+```
+
+### 7.4 解绑OTP
+- **接口地址**: `/employee/otp/unbind`
+- **请求方式**: `POST`
+- **接口描述**: 解绑OTP验证器
+
+#### 请求参数
+```json
+{
+  "verifyCode": "123456"
+}
+```
+
+#### 响应参数
+```json
+{
+  "code": 1,
+  "msg": "OTP解绑成功",
+  "data": null
+}
+```
+
+## 8. 系统管理接口
+
+### 8.1 获取用户信息
 - **接口地址**: `/user/info`
 - **请求方式**: `GET`
 - **接口描述**: 获取当前登录用户信息
@@ -521,7 +725,7 @@
 }
 ```
 
-### 7.2 获取菜单列表
+### 8.2 获取菜单列表
 - **接口地址**: `/menu/list`
 - **请求方式**: `GET`
 - **接口描述**: 获取用户可访问的菜单列表
@@ -557,9 +761,9 @@
 }
 ```
 
-## 8. 文件管理接口
+## 9. 文件管理接口
 
-### 8.1 文件上传
+### 9.1 文件上传
 - **接口地址**: `/file/upload`
 - **请求方式**: `POST`
 - **接口描述**: 上传文件
@@ -582,7 +786,7 @@
 }
 ```
 
-### 8.2 文件下载
+### 9.2 文件下载
 - **接口地址**: `/file/download/{fileId}`
 - **请求方式**: `GET`
 - **接口描述**: 下载文件
@@ -595,9 +799,9 @@
 #### 响应参数
 返回文件流
 
-## 9. 接口调用示例
+## 10. 接口调用示例
 
-### 9.1 JavaScript 调用示例
+### 10.1 JavaScript 调用示例
 ```javascript
 // 设置请求头
 const headers = {
@@ -636,7 +840,7 @@ const uploadReceipt = async (orderId, fileId) => {
 };
 ```
 
-### 9.2 Java 调用示例
+### 10.2 Java 调用示例
 ```java
 @Service
 public class OrderService {
@@ -662,9 +866,9 @@ public class OrderService {
 }
 ```
 
-## 10. 错误处理
+## 11. 错误处理
 
-### 10.1 常见错误码
+### 11.1 常见错误码
 | 错误码 | 说明 | 解决方案 |
 |--------|------|----------|
 | 30007 | 未登录或登录失效 | 重新登录获取token |
@@ -673,7 +877,7 @@ public class OrderService {
 | 40003 | 权限不足 | 联系管理员分配权限 |
 | 50001 | 系统内部错误 | 联系技术支持 |
 
-### 10.2 错误响应示例
+### 11.2 错误响应示例
 ```json
 {
   "code": 40001,
