@@ -36,7 +36,9 @@
       <img class="login-qr" :src="loginQR" />
       <div class="login-header">
         <div class="login-title">{{ $t('login.title') }}</div>
-        <LanguageSelector />
+        <div class="language-selector-wrapper">
+          <LanguageSelector />
+        </div>
       </div>
       <a-form ref="formRef" class="login-form" :model="loginForm" :rules="rules">
         <a-form-item name="loginName">
@@ -234,6 +236,11 @@
       font-size: 24px;
       font-weight: bold;
       color: #333;
+    }
+    
+    .language-selector-wrapper {
+      z-index: 1000;
+      position: relative;
     }
   }
 </style>
