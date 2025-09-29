@@ -1153,4 +1153,138 @@ INSERT INTO `t_i18n_message` VALUES (14, 'payment.channel.title', 'zh_CN', '支�
 INSERT INTO `t_i18n_message` VALUES (15, 'status.enable', 'zh_CN', '启用', 'status', 'system', '2024-09-29 16:00:00', '2024-09-29 16:00:00');
 INSERT INTO `t_i18n_message` VALUES (16, 'status.disable', 'zh_CN', '禁用', 'status', 'system', '2024-09-29 16:00:00', '2024-09-29 16:00:00');
 
+-- ----------------------------
+-- Table structure for t_cash_order_detail
+-- ----------------------------
+DROP TABLE IF EXISTS `t_cash_order_detail`;
+CREATE TABLE `t_cash_order_detail`  (
+  `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `platform_id` bigint(0) NULL DEFAULT NULL COMMENT '平台ID',
+  `order_no` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '订单编号',
+  `batch_no` int(0) NULL DEFAULT NULL COMMENT '处理批次',
+  `apply_time` bigint(0) NULL DEFAULT NULL COMMENT '批次申请时间',
+  `seq_no` int(0) NULL DEFAULT NULL COMMENT '拆分序号',
+  `sub_order_no` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '出金子订单号：orderNo+batchNo+seqNo',
+  `chnl_type` int(0) NULL DEFAULT NULL COMMENT '渠道类型 1-自有对接渠道、2-外部渠道',
+  `channel_id` bigint(0) NULL DEFAULT NULL COMMENT '渠道商户Id',
+  `amount` decimal(15, 2) NULL DEFAULT NULL COMMENT '出金金额',
+  `amount_usdt` decimal(15, 2) NULL DEFAULT NULL COMMENT '出金金额（USDT）',
+  `currency` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '币种',
+  `country` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '国家',
+  `account_holder` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '银行账户',
+  `bank_account` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '银行卡号码',
+  `bank_code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '银行代码',
+  `bank_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '收款银行名称',
+  `bank_branch` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '收款银行分行名称',
+  `bank_province` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '收款银行所在省份',
+  `bank_city` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '收款银行所在城市',
+  `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '出金备注',
+  `callback` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '订单确认通知回调地址',
+  `ext` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '额外参数',
+  `status` int(0) NULL DEFAULT NULL COMMENT '交易状态 1-处理中 2-处理成功 3-处理失败',
+  `errmsg` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '错误信息',
+  `retry` int(0) NULL DEFAULT NULL COMMENT '查询订单确认状态重试次数',
+  `thirdparty_order_no` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '第三方订单编号',
+  `bill_file_id` bigint(0) NULL DEFAULT NULL COMMENT '出金单据文件id',
+  `finished_time` bigint(0) NULL DEFAULT NULL COMMENT '完成时间',
+  `create_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_order_no`(`order_no`) USING BTREE,
+  INDEX `idx_platform_id`(`platform_id`) USING BTREE,
+  INDEX `idx_channel_id`(`channel_id`) USING BTREE,
+  INDEX `idx_status`(`status`) USING BTREE,
+  INDEX `idx_create_time`(`create_time`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '兑付订单拆分明细表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for t_cash_order_info
+-- ----------------------------
+DROP TABLE IF EXISTS `t_cash_order_info`;
+CREATE TABLE `t_cash_order_info`  (
+  `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `platform_id` bigint(0) NULL DEFAULT NULL COMMENT '平台ID',
+  `channel_id` bigint(0) NULL DEFAULT NULL COMMENT '渠道id',
+  `order_no` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '订单编号',
+  `withdraw_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '出金類型，bank',
+  `withdraw_channel_list` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '限定出金渠道',
+  `amount` decimal(15, 2) NULL DEFAULT NULL COMMENT '出金金额',
+  `amount_usdt` decimal(15, 2) NULL DEFAULT NULL COMMENT '出金金额（USDT）',
+  `currency` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '币种',
+  `country` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '国家',
+  `account_holder` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '银行账户名称',
+  `bank_account` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '银行卡号码',
+  `bank_code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '银行代码',
+  `bank_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '收款银行名称',
+  `bank_branch` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '收款银行分行名称',
+  `bank_province` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '收款银行所在省份',
+  `bank_city` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '收款银行所在城市',
+  `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '出金备注',
+  `callback` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '订单确认通知回调地址',
+  `user_id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '用户编号',
+  `client_ip` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '用户IP地址',
+  `device` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '用户设备类型',
+  `ext` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '额外参数',
+  `status` int(0) NULL DEFAULT NULL COMMENT '交易状态 1-待处理 2-处理中 3-已完成',
+  `curr_batch_no` int(0) NULL DEFAULT NULL COMMENT '当前批次号',
+  `manual_flag` int(0) NULL DEFAULT 0 COMMENT '人工处理标志：0-自动处理 1-人工处理',
+  `manual_reason` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '人工处理原因',
+  `manual_split_flag` int(0) NULL DEFAULT 0 COMMENT '人工拆单标志 0-未拆单 1-拆单',
+  `manual_remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '人工处理备注',
+  `apply_time` bigint(0) NULL DEFAULT NULL COMMENT '申请时间',
+  `finished_time` bigint(0) NULL DEFAULT NULL COMMENT '订单完成时间',
+  `create_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_order_no`(`order_no`) USING BTREE,
+  INDEX `idx_platform_id`(`platform_id`) USING BTREE,
+  INDEX `idx_channel_id`(`channel_id`) USING BTREE,
+  INDEX `idx_status`(`status`) USING BTREE,
+  INDEX `idx_create_time`(`create_time`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '兑付订单信息表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for t_settle_bill
+-- ----------------------------
+DROP TABLE IF EXISTS `t_settle_bill`;
+CREATE TABLE `t_settle_bill`  (
+  `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `channel_id` bigint(0) NULL DEFAULT NULL COMMENT '渠道商户Id',
+  `bill_no` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '结算单号',
+  `bill_date` date NULL DEFAULT NULL COMMENT '结算日期',
+  `total_amount` decimal(15, 2) NULL DEFAULT NULL COMMENT '总金额',
+  `fee_amount` decimal(15, 2) NULL DEFAULT NULL COMMENT '手续费金额',
+  `settle_amount` decimal(15, 2) NULL DEFAULT NULL COMMENT '结算金额',
+  `status` int(0) NULL DEFAULT NULL COMMENT '结算状态 1-待结算 2-已结算 3-结算失败',
+  `settle_time` datetime(0) NULL DEFAULT NULL COMMENT '结算时间',
+  `remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '备注',
+  `create_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_channel_id`(`channel_id`) USING BTREE,
+  INDEX `idx_bill_no`(`bill_no`) USING BTREE,
+  INDEX `idx_bill_date`(`bill_date`) USING BTREE,
+  INDEX `idx_status`(`status`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '结算单表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for t_settle_order
+-- ----------------------------
+DROP TABLE IF EXISTS `t_settle_order`;
+CREATE TABLE `t_settle_order`  (
+  `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `channel_id` bigint(0) NULL DEFAULT NULL COMMENT '渠道商户Id',
+  `bill_id` bigint(0) NULL DEFAULT NULL COMMENT '结算单ID',
+  `order_no` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '订单编号',
+  `order_type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '订单类型',
+  `amount` decimal(15, 2) NULL DEFAULT NULL COMMENT '订单金额',
+  `fee_amount` decimal(15, 2) NULL DEFAULT NULL COMMENT '手续费',
+  `create_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_channel_id`(`channel_id`) USING BTREE,
+  INDEX `idx_bill_id`(`bill_id`) USING BTREE,
+  INDEX `idx_order_no`(`order_no`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '结算单订单关联表' ROW_FORMAT = Dynamic;
+
 SET FOREIGN_KEY_CHECKS = 1;
