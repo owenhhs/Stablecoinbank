@@ -23,7 +23,7 @@
             <template #icon>
               <component :is="$antIcons[item.icon]" />
             </template>
-            {{ item.menuName }}
+            {{ getMenuI18nName(item.menuName, $i18n.locale.value) }}
           </a-menu-item>
         </template>
         <template v-else>
@@ -41,6 +41,7 @@
   import { router } from '/@/router/index';
   import { useAppConfigStore } from '/@/store/modules/system/app-config';
   import { useUserStore } from '/@/store/modules/system/user';
+  import { getMenuI18nName } from '/@/constants/menu-i18n';
 
   const theme = computed(() => useAppConfigStore().$state.sideMenuTheme);
 

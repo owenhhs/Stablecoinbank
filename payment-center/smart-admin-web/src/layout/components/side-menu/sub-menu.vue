@@ -12,7 +12,7 @@
     <template #icon>
       <component :is="$antIcons[menuInfo.icon]" />
     </template>
-    <template #title>{{ menuInfo.menuName }}</template>
+    <template #title>{{ getMenuI18nName(menuInfo.menuName, $i18n.locale.value) }}</template>
     <template v-for="item in menuInfo.children" :key="item.menuId">
       <template v-if="item.visibleFlag && !item.disabledFlag">
         <template v-if="!item.children">
@@ -20,7 +20,7 @@
             <template #icon>
               <component :is="$antIcons[item.icon]" />
             </template>
-            {{ item.menuName }}
+            {{ getMenuI18nName(item.menuName, $i18n.locale.value) }}
           </a-menu-item>
         </template>
         <template v-else>
@@ -31,6 +31,8 @@
   </a-sub-menu>
 </template>
 <script setup>
+  import { getMenuI18nName } from '/@/constants/menu-i18n';
+  
   const props = defineProps({
     menuInfo: {
       type: Object,
