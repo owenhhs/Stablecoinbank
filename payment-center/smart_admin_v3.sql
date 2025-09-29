@@ -998,4 +998,89 @@ CREATE TABLE `t_employee_otp`  (
   INDEX `idx_employee_id`(`employee_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '员工多因子信息表' ROW_FORMAT = Dynamic;
 
+-- ----------------------------
+-- Table structure for t_payment_channel_info
+-- ----------------------------
+DROP TABLE IF EXISTS `t_payment_channel_info`;
+CREATE TABLE `t_payment_channel_info`  (
+  `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `mer_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商户名称',
+  `mer_code` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商户编码',
+  `mer_ak` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商户号',
+  `mer_sk` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商户秘钥',
+  `domain` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '域名',
+  `ext` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '额外配置信息',
+  `mer_username` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商户持有人姓名',
+  `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '绑定手机号',
+  `id_number` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '证件号',
+  `payment_flag` int(0) NULL DEFAULT NULL COMMENT '支付标志',
+  `payment_scale` int(0) NULL DEFAULT NULL COMMENT '支付比例',
+  `payment_limit` decimal(15, 2) NULL DEFAULT NULL COMMENT '支付限额',
+  `payment_count` int(0) NULL DEFAULT NULL COMMENT '支付笔数限制',
+  `cash_flag` int(0) NULL DEFAULT NULL COMMENT '兑付标志',
+  `cash_scale` int(0) NULL DEFAULT NULL COMMENT '兑付比例',
+  `cash_limit` decimal(15, 2) NULL DEFAULT NULL COMMENT '兑付限额',
+  `cash_count` int(0) NULL DEFAULT NULL COMMENT '兑付笔数限制',
+  `work_time` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '工作时间',
+  `interface_type` int(0) NULL DEFAULT NULL COMMENT '接口类型 1-API方式，2-非API方式',
+  `impl_code` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '实现类关联值',
+  `xj_flag` int(0) NULL DEFAULT NULL COMMENT '是否支持新疆用户 0-不支持 1-支持',
+  `status` int(0) NULL DEFAULT 1 COMMENT '状态，0-禁用；1-启用',
+  `create_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_mer_code`(`mer_code`) USING BTREE,
+  INDEX `idx_status`(`status`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '渠道基本信息表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for t_payment_order_info
+-- ----------------------------
+DROP TABLE IF EXISTS `t_payment_order_info`;
+CREATE TABLE `t_payment_order_info`  (
+  `id` bigint(0) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `platform_id` bigint(0) NULL DEFAULT NULL COMMENT '商户ID',
+  `channel_id` bigint(0) NULL DEFAULT NULL COMMENT '渠道商户Id',
+  `business_id` bigint(0) NULL DEFAULT NULL COMMENT '业务范围Id',
+  `order_no` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '订单编号',
+  `deposit_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '银行类型，bank/qrcode',
+  `payment_channel` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '二维码渠道',
+  `amount` decimal(15, 2) NOT NULL COMMENT '存款金额',
+  `account_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '银行账户',
+  `account_name_hash` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '账户名哈希',
+  `bank_account` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '银行卡号码',
+  `bank_code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '银行代码',
+  `deposit_remark` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '存款备注',
+  `user_id` bigint(0) NULL DEFAULT NULL COMMENT '用户ID',
+  `callback` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '订单确认通知回调地址',
+  `landing_url` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '前端回调地址',
+  `apply_time` bigint(0) NULL DEFAULT NULL COMMENT '申请时间',
+  `expired_time` bigint(0) NULL DEFAULT NULL COMMENT '订单过期时间',
+  `finished_time` bigint(0) NULL DEFAULT NULL COMMENT '订单完成时间',
+  `name` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '商品名称',
+  `client_ip` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '用户IP地址',
+  `device` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '用户设备类型',
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '电子邮箱',
+  `currency` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '币种',
+  `country` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '国家',
+  `ext` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '额外参数',
+  `qrcode_id` bigint(0) NULL DEFAULT NULL COMMENT '二维码文件id',
+  `thirdparty_order_no` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '第三方订单编号',
+  `sub_mer_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '子商户名称',
+  `payment_status` int(0) NULL DEFAULT NULL COMMENT '支付状态 1 待付款 2 已付款 3 已取消 4 过期',
+  `status` int(0) NULL DEFAULT NULL COMMENT '订单状态 1 待确认 2 已确认 3 挂起',
+  `bill_file_id` bigint(0) NULL DEFAULT NULL COMMENT '支付单据文件id',
+  `retry` int(0) NULL DEFAULT NULL COMMENT '查询订单确认状态重试次数',
+  `create_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime(0) NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP(0) COMMENT '更新时间',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `idx_order_no`(`order_no`) USING BTREE,
+  INDEX `idx_platform_id`(`platform_id`) USING BTREE,
+  INDEX `idx_channel_id`(`channel_id`) USING BTREE,
+  INDEX `idx_payment_status`(`payment_status`) USING BTREE,
+  INDEX `idx_status`(`status`) USING BTREE,
+  INDEX `idx_create_time`(`create_time`) USING BTREE,
+  INDEX `idx_account_name_hash`(`account_name_hash`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci COMMENT = '支付订单信息表' ROW_FORMAT = Dynamic;
+
 SET FOREIGN_KEY_CHECKS = 1;
