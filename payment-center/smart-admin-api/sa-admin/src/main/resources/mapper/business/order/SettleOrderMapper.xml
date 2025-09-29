@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lab1024.sa.admin.module.business.order.dao.SettleOrderDao">
+
+    <!-- 分页查询 -->
+    <select id="queryPage" resultType="net.lab1024.sa.admin.module.business.order.domain.vo.PaymentOrderInfoListVO">
+        SELECT
+        tpoi.id, tpoi.finished_time as pay_time, tpoi.order_no, tpoi.amount, tpci.mer_name, tpci.mer_code as mer_no,
+        tpoi.deposit_type as payment_method, tpoi.account_name, tpoi.bank_account, tpoi.payment_status as pay_status,
+        tpoi.status
+        FROM t_settle_order tso
+        LEFT JOIN t_payment_order_info tpoi ON tpoi.id = tso.order_id AND tpoi.channel_id = tso.channel_id
+        LEFT JOIN t_payment_channel_info tpci ON tpci.id = tpoi.channel_id
+        WHERE tso.settle_bill_id = #{queryForm.settleId}
+    </select>
+
+
+</mapper>

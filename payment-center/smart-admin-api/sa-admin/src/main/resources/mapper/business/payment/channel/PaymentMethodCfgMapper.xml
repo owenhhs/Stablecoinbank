@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lab1024.sa.admin.module.business.payment.channel.dao.PaymentMethodCfgDao">
+
+    <!-- 分页查询 -->
+    <select id="queryPage" resultType="net.lab1024.sa.admin.module.business.payment.channel.domain.vo.PaymentMethodCfgVO">
+        SELECT
+        *
+        FROM t_payment_method_cfg
+        <where>
+            <!--渠道商户id-->
+            <if test="queryForm.channelId != null">
+                AND channel_id = #{queryForm.channelId}
+            </if>
+            <!--支付方式类型，payment-支付方式；cash-兑付方式；-->
+            <if test="queryForm.paymentType != null">
+                AND payment_type = #{queryForm.paymentType}
+            </if>
+            <!--状态，0-禁用；1-启用；-->
+            <if test="queryForm.status != null">
+                AND status = #{queryForm.status}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

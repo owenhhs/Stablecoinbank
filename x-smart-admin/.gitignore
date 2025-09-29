@@ -1,0 +1,32 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**
+!**/src/test/**
+**/logs/**
+.log
+**/.DS_Store
+**/logs/
+upload/
+
+**/package-lock.json
+
+### STS ###
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### front ###
+**/dist
+**/node_modules
+**/.vscode
+

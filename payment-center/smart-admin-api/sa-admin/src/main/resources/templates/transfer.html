@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>ZFX</title>
+</head>
+
+<body class="body"></body>
+
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  var callback = /*[[${callback}]]*/ '';
+  window.location.href = callback
+  /*]]>*/
+</script>
+
+</html>

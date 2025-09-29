@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lab1024.sa.admin.module.business.payment.channel.dao.PaymentChannelInfoDao">
+
+    <!-- 分页查询 -->
+    <select id="queryPage" resultType="net.lab1024.sa.admin.module.business.payment.channel.domain.vo.PaymentChannelInfoVO">
+        SELECT
+        *
+        FROM t_payment_channel_info
+        <where>
+            <!--商户名称-->
+            <if test="queryForm.merName != null and queryForm.merName != ''">
+                AND INSTR(t_payment_channel_info.mer_name,#{queryForm.merName})
+            </if>
+            <!--商户编码-->
+            <if test="queryForm.merCode != null">
+                AND t_payment_channel_info.mer_code = #{queryForm.merCode}
+            </if>
+            <!--入金开通标志-->
+            <if test="queryForm.paymentFlag != null">
+                AND t_payment_channel_info.payment_flag = #{queryForm.paymentFlag}
+            </if>
+            <!--出金开通标志-->
+            <if test="queryForm.cashFlag != null">
+                AND t_payment_channel_info.cash_flag = #{queryForm.cashFlag}
+            </if>
+            <!--状态 0-禁用；1-启用；-->
+            <if test="queryForm.status != null">
+                AND t_payment_channel_info.status = #{queryForm.status}
+            </if>
+            <!--接口类型 1-API方式，2-非API方式（通过【渠道管理平台】支持）-->
+            <if test="queryForm.interfaceType != null">
+                AND t_payment_channel_info.interface_type = #{queryForm.interfaceType}
+            </if>
+        </where>
+
+    </select>
+    
+    
+    <select id="queryIdListByAmount" resultType="net.lab1024.sa.admin.module.business.payment.channel.domain.vo.PaymentChannelInfoVO">
+        SELECT distinct tpci.id, tpci.mer_code, tpci.impl_code, tpci.domain, tpci.mer_ak, tpci.mer_sk, tpci.ext, tpci.payment_scale, tpci.payment_limit,
+               tpci.payment_count, tpci.cash_scale, tpci.cash_limit, tpci.cash_count, tpcbc.id AS business_id,
+        tpci.work_time, tpci.status
+        FROM t_payment_channel_info tpci
+        INNER JOIN t_payment_channel_business_cfg tpcbc ON tpci.id = tpcbc.channel_id
+        INNER JOIN t_payment_method_cfg tpmc ON tpci.id = tpmc.channel_id and tpmc.payment_type = tpcbc.payment_type
+        WHERE tpci.status = 1
+        AND tpmc.status = 1
+        AND tpmc.payment_type = #{paymentType}
+        AND tpcbc.currency = #{currency}
+        AND tpcbc.country = #{country}
+        <if test="xjFlag != null">
+            AND tpci.xj_flag = #{xjFlag}
+        </if>
+        <if test="paymentType == 'payment'">
+            AND tpci.payment_flag = 1
+        </if>
+        <if test="paymentType == 'cash'">
+            AND tpci.cash_flag = 1
+        </if>
+        <if test="paymentMethod == 'bank'">
+           AND tpmc.payment_method = 'bank'
+        </if>
+        <if test="paymentMethod != 'bank'">
+           AND tpmc.payment_method = #{paymentChannel}
+        </if>
+        <if test="filterFxmch == true">
+            AND tpci.impl_code != 'fxmch'
+        </if>
+        AND tpcbc.amount_min &lt;= #{amount, javaType=java.math.BigDecimal, jdbcType=NUMERIC}
+        AND tpcbc.amount_max > #{amount, javaType=java.math.BigDecimal, jdbcType=NUMERIC}
+    </select>
+
+    <select id="queryListByIds" resultType="net.lab1024.sa.admin.module.business.payment.channel.domain.vo.PaymentChannelInfoVO">
+        SELECT distinct tpci.id, tpci.mer_code, tpci.impl_code, tpci.domain, tpci.mer_ak, tpci.mer_sk, tpci.ext, tpci.payment_scale, tpci.payment_limit,
+        tpci.payment_count, tpci.cash_scale, tpci.cash_limit, tpci.cash_count, tpcbc.id AS business_id,
+        tpci.work_time, tpci.status
+        FROM t_payment_channel_info tpci
+        INNER JOIN t_payment_channel_business_cfg tpcbc ON tpci.id = tpcbc.channel_id
+        INNER JOIN t_payment_method_cfg tpmc ON tpci.id = tpmc.channel_id and tpmc.payment_type = tpcbc.payment_type
+        WHERE tpci.status = 1
+        AND tpmc.status = 1
+        AND tpmc.payment_type = #{paymentType}
+        AND tpcbc.currency = #{currency}
+        AND tpcbc.country = #{country}
+        <if test="xjFlag != null">
+            AND tpci.xj_flag = #{xjFlag}
+        </if>
+        <if test="paymentType == 'payment'">
+            AND tpci.payment_flag = 1
+        </if>
+        <if test="paymentType == 'cash'">
+            AND tpci.cash_flag = 1
+        </if>
+        AND tpci.id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")" >
+            #{id}
+        </foreach>
+        <if test="paymentMethod == 'bank'">
+            AND tpmc.payment_method = 'bank'
+        </if>
+        <if test="paymentMethod != 'bank'">
+            AND tpmc.payment_method = #{paymentChannel}
+        </if>
+        AND tpcbc.amount_min &lt;= #{amount, javaType=java.math.BigDecimal, jdbcType=NUMERIC}
+        AND tpcbc.amount_max > #{amount, javaType=java.math.BigDecimal, jdbcType=NUMERIC}
+    </select>
+
+    <select id="queryById" resultType="net.lab1024.sa.admin.module.business.payment.channel.domain.vo.PaymentChannelInfoVO" >
+        SELECT
+            *
+        FROM t_payment_channel_info
+        WHERE id = #{id}
+          AND payment_flag = 1
+          AND status = 1
+    </select>
+
+</mapper>

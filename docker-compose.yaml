@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: zfx-mysql
+    hostname: zfx-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: smart_admin_v3
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./payment-center/smart_admin_v3.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - zfx-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: zfx-redis
+    hostname: zfx-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - zfx-network
+
+  smart-admin-api:
+    build:
+      context: ./payment-center/smart-admin-api
+      dockerfile: Dockerfile
+      args:
+        ENV: test
+    container_name: zfx-smart-admin-api
+    hostname: zfx-smart-admin-api
+    environment:
+      - MYSQL_URL=jdbc:mysql://zfx-mysql:3306/smart_admin_v3?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=123456
+      - REDIS_DATABASE=0
+      - REDIS_HOST=zfx-redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=
+      - MYBATIS_ENCRYPT_ENABLE=false
+      - MYBATIS_ENCRYPT_SECRETKEY=your-secret-key-here
+      - RSA_PRIVATE_KEY=your-private-key-here
+      - RSA_PUBLIC_KEY=your-public-key-here
+      - STORAGE_REGION=us-east-1
+      - STORAGE_ENDPOINT=s3.amazonaws.com
+      - STORAGE_BACKETNAME=your-bucket-name
+      - STORAGE_ACCESSKEY=your-access-key
+      - STORAGE_SECRETKEY=your-secret-key
+      - SERVER_DOMAIN=http://localhost:1681
+      - WEB_DOMAIN=http://localhost:1881
+      - REFUSE_XJ_CHANNEL_ID=
+      - LOCK_USER_CHANNEL=
+      - SMS_PHONE=
+    ports:
+      - "1681:1024"
+    volumes:
+      - ./logs/api:/opt/logs
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - zfx-network
+
+  smart-admin-web:
+    build:
+      context: ./payment-center/smart-admin-web
+      dockerfile: Dockerfile
+      args:
+        DEPLOY: test
+    container_name: zfx-smart-admin-web
+    hostname: zfx-smart-admin-web
+    ports:
+      - "1881:80"
+    depends_on:
+      - smart-admin-api
+    networks:
+      - zfx-network
+
+networks:
+  zfx-network:
+    driver: bridge
+
+volumes:
+  mysql_data:

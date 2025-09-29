@@ -1,0 +1,46 @@
+.desc-row {
+  width: 100%;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.desc-col {
+  flex: 1;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding-bottom: 16px;
+
+  &.mobile {
+    font-size: 6px;
+    font-weight: bolder;
+    padding-bottom: 4px;
+  }
+}
+
+.desc-label,
+.desc-text {
+  color: rgba(0, 0, 0, 0.88);
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 1.5714285714285714;
+  text-align: start;
+}
+
+.desc-label {
+  width: 100px;
+}
+
+.qrcode-img-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.qrcode-img {
+  display: block;
+  width: 240px;
+  height: 240px;
+}

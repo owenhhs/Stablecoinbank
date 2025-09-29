@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8">
+  <title>支付信息</title>
+</head>
+
+<body class="body">
+  <div class="page-title">付款</div>
+  <div id="notice" class="notice-wrap">
+    <div class="notice">支付宝支付时，可能会产生随机优惠，祝好运！</div>
+  </div>
+  <div class="container">
+
+    <div class="card">
+      <div class="card-title">支付信息</div>
+      <div class="card-content">
+        <div class="desc-row">
+          <div class="desc-col">
+            <div class="desc-label">支付金额：</div>
+            <div class="desc-text" th:text="'￥' + ${price} + '元'"></div>
+          </div>
+          <div class="desc-col">
+            <div class="desc-label">付款人：</div>
+            <div class="desc-text" th:text="${payer}"></div>
+          </div>
+          <div class="desc-col">
+            <div class="desc-label">支付时效：</div>
+            <div id="timer" class="desc-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 24px;">
+      <div style="flex: 1;" class="card">
+        <div class="card-title">收款信息</div>
+        <div class="card-content">
+          <div class="desc-col">
+            <div class="desc-label">收款码：</div>
+            <div id="desc-text" class="desc-text" th:text="${paymentChannel}"></div>
+          </div>
+          <div class="desc-col" th:if="${account}">
+            <div class="desc-label" >收款人：</div>
+            <div id="user-name" class="desc-text" th:text="${account}"></div>
+          </div>
+          <div class="desc-col" th:if="${accountNo}">
+            <div class="desc-label" >收款账号：</div>
+            <div id="user-account" class="desc-text" th:text="${accountNo}"></div>
+            <button class="copy-button" onclick="onCopy()">复制</button>
+          </div>
+          <div class="desc-col">
+            <div class="desc-label"></div>
+            <div id="qrcode-img-box" class="qrcode-img-box">
+              <img class="qrcode-img" th:src="${qrcode}" alt="qrcode">
+<!--              <div class="qrcode-refresh" th:if="${showRefresh}" onclick="onRefresh()">刷新</div>-->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="flex: 1; background: #FCF5EF;" class="card">
+        <div class="card-title">提示</div>
+        <div class="card-content">
+          <div class="desc-col">
+            <div class="desc-text">1、请按实付金额转账</div>
+          </div>
+          <div class="desc-col">
+            <div class="desc-text">2、请使用本人<span th:text="${paymentChannel}"></span>账户支付，不要使用第三者<span th:text="${paymentChannel}"></span>账户付款，否则会造成交易失败</div>
+          </div>
+          <div class="desc-col">
+            <div class="desc-text">3、请在支付完成之后点击我已完成转账</div>
+          </div>
+          <div class="desc-col">
+            <div class="desc-text">4、无法正常完成付款，请点击刷新切换其它收款码</div>
+          </div>
+          <div class="desc-col">
+            <div class="desc-text">5、<span style="color: #E13730">汇款请勿备注任何信息</span></div>
+          </div>
+          <div class="desc-col">
+            <div class="desc-text">6、<span style="color: #E13730">付款完成后，请务必上传付款凭证（截图）。否则将导致延迟上账或无法上账。</span></div>
+          </div>
+          <div class="desc-col" id="alipay-tip">
+            <div class="desc-text">7、<span style="color: #E13730">尊敬的客户，使用支付宝支付时，可能会出现“风险提示”。建议您更换一个与当前支付金额较为接近的日常消费金额。若多次尝试后仍未成功，请联系客服协助，谢谢配合！</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <button class="default-button" onclick="onCancel()">取消订单</button>
+      <button class="primary-button" onclick="onPaid()">我已完成转账</button>
+    </div>
+  </div>
+
+  <div class="affirm-alert" id="affirm-alert">
+    <div class="alert-box">
+      <div class="alert-close">
+        <span role="img" aria-label="inbox" onclick="onClose()">
+          <svg viewBox="0 0 1024 1024" focusable="false" data-icon="inbox" width="1em" height="1em" fill="currentColor"
+            aria-hidden="true">
+            <path
+              d="M563.8 512l262.5-312.9c4.4-5.2 0.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9c-4.4 5.2-0.7 13.1 6.1 13.1h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z">
+            </path>
+          </svg>
+        </span>
+      </div>
+      <div class="alert-title">付款确认</div>
+      <div class="alert-upload-box" id="alert-upload-box">
+        是否使用您实名的账户完成付款？
+      </div>
+      <div class="alert-footer">
+        <button class="default-button" onclick="onClose()">去转账</button>
+        <button class="primary-button" onclick="onConfirm()">确认</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 上传凭证弹窗 -->
+  <div class="affirm-alert" id="upload-confirm-alert">
+    <div class="alert-box">
+      <div class="alert-close">
+        <span role="img" aria-label="inbox" onclick="onUploadClose()">
+          <svg viewBox="0 0 1024 1024" focusable="false" data-icon="inbox" width="1em" height="1em" fill="currentColor"
+            aria-hidden="true">
+            <path
+              d="M563.8 512l262.5-312.9c4.4-5.2 0.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9c-4.4 5.2-0.7 13.1 6.1 13.1h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z">
+            </path>
+          </svg>
+        </span>
+      </div>
+      <div class="alert-title">请上传付款凭证</div>
+      <div class="file-upload-wrap">
+        <img id="file-upload-display" class="file-upload-display" src="" alt="">
+        <div id="file-upload-tip" class="file-upload-tip">点击选择凭证图片</div>
+        <input id="file-upload-input" class="file-upload" type="file" accept="image/*" name="imageUpload">
+      </div>
+      <div class="alert-footer">
+        <button class="default-button" onclick="onUploadClose()">取消</button>
+        <button class="primary-button" onclick="submit()">确认上传</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 取消订单二次确认弹窗 -->
+  <div class="affirm-alert" id="cancel-confirm-alert">
+    <div class="alert-box">
+      <div class="alert-close">
+        <span role="img" aria-label="inbox" onclick="onCancelClose()">
+          <svg viewBox="0 0 1024 1024" focusable="false" data-icon="inbox" width="1em" height="1em" fill="currentColor"
+            aria-hidden="true">
+            <path
+              d="M563.8 512l262.5-312.9c4.4-5.2 0.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9c-4.4 5.2-0.7 13.1 6.1 13.1h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z">
+            </path>
+          </svg>
+        </span>
+      </div>
+      <div class="alert-title">提示</div>
+      <div class="alert-upload-box" id="cancel-alert-upload-box">
+        请确认您未支付此订单，如果已支付的情况下取消订单，会导致无法正常入账。
+      </div>
+      <div class="alert-footer">
+        <button class="default-button" onclick="onCancelClose()">取消</button>
+        <button class="primary-button" onclick="submitCancel()">确认取消</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- 刷新付款码二次确认弹窗 -->
+  <div class="affirm-alert" id="refresh-confirm-alert">
+    <div class="alert-box">
+      <div class="alert-close">
+        <span role="img" aria-label="inbox" onclick="onRefreshClose()">
+          <svg viewBox="0 0 1024 1024" focusable="false" data-icon="inbox" width="1em" height="1em" fill="currentColor"
+               aria-hidden="true">
+            <path
+                    d="M563.8 512l262.5-312.9c4.4-5.2 0.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9c-4.4 5.2-0.7 13.1 6.1 13.1h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z">
+            </path>
+          </svg>
+        </span>
+      </div>
+      <div class="alert-title">提示</div>
+      <div class="alert-upload-box" id="refresh-alert-upload-box">
+        请确认您是否无法支付此订单，如果已支付的情况下刷新付款码，可能会导致无法正常入账。
+      </div>
+      <div class="alert-footer">
+        <button class="default-button" onclick="onRefreshClose()">取消</button>
+        <button class="primary-button" onclick="onRefreshQrcode()">确认刷新</button>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  var token = /*[[${token}]]*/ {};
+  var durationTime = /*[[${time}]]*/ 0;
+  var price = /*[[${price}]]*/ 0;
+  var account = /*[[${account}]]*/ {};
+  var accountNo = /*[[${accountNo}]]*/ {};
+  var payer = /*[[${payer}]]*/ '';
+  var paymentChannel = /*[[${paymentChannel}]]*/ {};
+  var callback = /*[[${callback}]]*/ {};
+  var domain = /*[[${domain}]]*/ {};
+  var qrcode = /*[[${qrcode}]]*/ {};
+  var showRefresh = /*[[${showRefresh}]]*/ false;
+
+  var loading = false;
+  var uploading = false;
+  var imageFile = null;
+
+  function onClose () {
+    var alert = document.getElementById('affirm-alert');
+    alert.style.display = "none"
+  }
+
+  function onUploadClose () {
+    resetFileUpload()
+    var alert = document.getElementById('upload-confirm-alert');
+    alert.style.display = "none"
+  }
+
+  function onPaid () {
+    var alert = document.getElementById('affirm-alert');
+    alert.style.display = "flex"
+  }
+
+  function onConfirm () {
+    var alert = document.getElementById('upload-confirm-alert');
+    alert.style.display = "flex"
+    onClose()
+  }
+
+  function submit () {
+    if (uploading) return
+    if (!imageFile) {
+      alert('请上传付款凭证');
+      return
+    }
+    uploading = true
+    var formData = new FormData();
+    formData.append('token', token);
+    formData.append('file', imageFile);
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', domain + '/openapi/order/v1/ly/commgr/payment/affirm');
+    xhr.onload = function () {
+      uploading = false;
+      if (xhr.status === 200) {
+        window.location = callback
+      } else {
+        alert('系统异常，请稍后重试');
+      }
+    };
+    xhr.onerror = function () {
+      uploading = false;
+      alert('系统异常，请稍后重试');
+    };
+    xhr.send(formData);
+  }
+
+  function onRefresh() {
+    const alert = document.getElementById('refresh-confirm-alert');
+    alert.style.display = "flex"
+  }
+
+  function onRefreshClose() {
+    const alert = document.getElementById('refresh-confirm-alert');
+    alert.style.display = "none"
+  }
+
+  function onRefreshQrcode () {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', domain + '/openapi/order/v1/ly/commgr/payment/switch?token=' + token, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = function () {
+      if (xhr.status === 200) {
+        const jsonResponse = JSON.parse(xhr.responseText);
+        if (jsonResponse.code === 0) {
+          window.location.reload();
+        } else {
+          alert(jsonResponse.msg);
+        }
+      } else {
+        alert('系统异常，请稍后重试');
+      }
+    };
+    xhr.onerror = function () {
+      alert('系统异常，请稍后重试');
+    };
+    xhr.send(); // 将对象转换为JSON字符串
+  }
+
+  function startTimer (duration, display) {
+    var timer = duration, minutes, seconds;
+    var intervalId = setInterval(function () {
+      minutes = parseInt(timer / 60 % 60, 10);
+      seconds = parseInt(timer % 60, 10);
+      if (minutes === 0 && seconds === 0) {
+        clearInterval(intervalId);
+        window.location = callback
+      } else if (minutes === 0) {
+        display.textContent = seconds + " 秒";
+      } else if (seconds === 0) {
+        display.textContent = minutes + "分";
+      } else {
+        display.textContent = minutes + "分" + seconds + " 秒";
+      }
+      if (--timer < 0) {
+        timer = duration;
+      }
+    }, 1000);
+  }
+
+  function resetFileUpload () {
+    var imageUpload = document.querySelector('#file-upload-input');
+    var imgDisplay = document.querySelector('#file-upload-display');
+    var imgUploadTip = document.querySelector('#file-upload-tip');
+    imageUpload.value = '';
+    imgDisplay.src = '';
+    imageFile = null;
+    imgDisplay.style.opacity = 0
+    imgUploadTip.style.opacity = 1
+  }
+
+  // ------------------- 取消订单 ------------------------
+
+  function onCancel () {
+    var alert = document.getElementById('cancel-confirm-alert');
+    alert.style.display = "flex"
+  }
+  
+  function onCancelClose () {
+    var alert = document.getElementById('cancel-confirm-alert');
+    alert.style.display = "none"
+  }
+
+  function submitCancel () {
+    if (loading) return;
+    loading = true;
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', domain + '/openapi/order/v1/ly/commgr/payment/cancel', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = function () {
+      loading = false;
+      const jsonResponse = JSON.parse(xhr.responseText);
+      if (jsonResponse === undefined || jsonResponse.code !== 0) {
+        alert('系统异常，请稍后重试');
+      } else {
+        window.location = callback
+      }
+    };
+    xhr.onerror = function () {
+      loading = false;
+      alert('系统异常，请稍后重试');
+    };
+    let formData = {
+      token: token,
+      payStatus: 3
+    }
+    xhr.send(JSON.stringify(formData)); // 将对象转换为JSON字符串
+  }
+
+  async function onCopy() {
+    try {
+      await navigator.clipboard.writeText(accountNo);
+      alert('账号复制成功');
+    } catch (err) {
+      alert('复制失败');
+      // Clipboard API 不支持时的回退方案
+    }
+  }
+
+
+  // ----------------- 页面加载完成后 --------------------
+
+  window.onload = function () {
+    var notice = document.querySelector('#notice');
+    notice.style.display = paymentChannel === '支付宝' ? 'block' : 'none';
+
+    var alipayTip = document.querySelector('#alipay-tip');
+    alipayTip.style.display = paymentChannel === '支付宝' ? 'block' : 'none';
+
+    var display = document.querySelector('#timer');
+    startTimer(durationTime, display);
+
+    var imageUpload = document.querySelector('#file-upload-input');
+    var imgDisplay = document.querySelector('#file-upload-display');
+    var imgUploadTip = document.querySelector('#file-upload-tip');
+    imageUpload.addEventListener('change', function (e) {
+      var file = e.target.files[0]; // 获取文件引用
+      if (!file) return
+      var mbNum = 5;
+      var fileSize = file.size;
+      var maxFileSize = mbNum * 1024 * 1024;
+      if (fileSize > maxFileSize) {
+        alert('请上传小于' + mbNum + 'MB的图片');
+        this.value = '';
+        return;
+      }
+      imageFile = file
+      var reader = new FileReader(); // 创建FileReader对象
+      reader.onload = function (e) { // 文件读取成功完成后执行的回调函数
+        imgDisplay.src = e.target.result; // 设置图片的src属性为读取到的数据
+        imgDisplay.style.opacity = 1
+        imgUploadTip.style.opacity = 0
+      };
+      reader.readAsDataURL(file); // 读取文件数据
+    })
+  };
+
+  /*]]>*/
+</script>
+
+<style>
+  .body {
+    margin: 0;
+    /* background-color: #FCF5EF; */
+    min-height: 100vh;
+    padding-bottom: 96px;
+  }
+
+  .page-title {
+    height: 60px;
+    line-height: 60px;
+    background-color: #1677ff;
+    font-size: 32px;
+    font-weight: 600;
+    font-weight: bold;
+    text-align: center;
+    color: #fff;
+  }
+
+  .notice-wrap {
+    background-color: #fff3e9;
+    display: none;
+  }
+
+  .notice {
+    color: #ff6430;
+    font-size: 18px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 12px 32px;
+    box-sizing: border-box;
+  }
+
+  .container {
+    /* height: 100%;
+    overflow: auto; */
+    box-sizing: border-box;
+    max-width: 1200px;
+    margin: auto;
+    padding: 24px 32px;
+  }
+
+  .card {
+    padding: 24px;
+    background-color: #f7f7f7;
+    border-radius: 8px;
+    margin-bottom: 24px;
+  }
+
+  .card-title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    flex: auto;
+    color: rgba(0, 0, 0, 0.88);
+    font-weight: 600;
+    font-size: 22px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+
+  .card-content {
+    /* padding-left: 24px; */
+  }
+
+  .desc-row {
+    width: 100%;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .desc-col {
+    flex: 1;
+    flex-shrink: 0;
+    display: flex;
+    align-items: flex-start;
+    padding-bottom: 16px;
+  }
+
+  .desc-label,
+  .desc-text {
+    color: rgba(0, 0, 0, 0.88);
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 1.5714285714285714;
+    text-align: start;
+  }
+
+  .desc-label {
+    width: 100px;
+  }
+
+  .qrcode-img-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .qrcode-img {
+    display: block;
+    width: 240px;
+    height: 240px;
+  }
+
+  .qrcode-refresh {
+    display: inline-block;
+    font-size: 16px;
+    font-weight: 400;
+    color: #1677ff;
+    cursor: pointer;
+  }
+
+  .footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    padding: 24px;
+    background-color: #fff;
+    box-shadow: 0px -2px 14.9px 0px rgba(165, 180, 233, 0.15);
+  }
+  .copy-button {
+    display: block;
+    background-color: #ffffff;
+    border: 1px solid #e3e3e3;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.02);
+    border-radius: 6px;
+    width: 60px;
+    height: 26px;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s;
+    margin-left: 20px;
+  }
+
+  .default-button {
+    display: block;
+    width: 200px;
+    height: 48px;
+    line-height: 48px;
+    background-color: #ffffff;
+    border: 1px solid #e3e3e3;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.02);
+    border-radius: 6px;
+    font-size: 18px;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s;
+  }
+
+  .default-button:hover {
+    opacity: 0.8;
+  }
+
+  .default-button:active {}
+
+  .primary-button {
+    display: block;
+    width: 200px;
+    height: 48px;
+    line-height: 48px;
+    color: #fff;
+    background-color: #1677ff;
+    box-shadow: 0 2px 0 rgba(5, 145, 255, 0.1);
+    border-radius: 6px;
+    font-size: 18px;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    transition: all 0.3s;
+  }
+
+  .primary-button:hover {
+    opacity: 0.8;
+  }
+
+  .primary-button:active {}
+
+  .affirm-alert {
+    position: fixed;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    background-color: rgba(0, 0, 0, 0.6);
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .alert-close {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    display: inline-block;
+    font-size: 20px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+  }
+
+  .alert-box {
+    position: absolute;
+    width: 420px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    padding: 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .alert-title {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 24px;
+  }
+
+  .alert-upload-box {
+    margin-bottom: 40px;
+  }
+
+  .alert-footer {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .alert-button {
+    flex: 1;
+    margin-top: 20px;
+    cursor: pointer;
+    height: 36px;
+    border-radius: 6px;
+    outline: none;
+  }
+
+  .file-upload-wrap {
+    display: flex;
+    width: 100%;
+    height: 200px;
+    border: 1px dashed #999;
+    border-radius: 6px;
+    position: relative;
+    margin-bottom: 24px;
+  }
+
+  .file-upload-tip {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #666;
+    font-size: 16px;
+  }
+
+  .file-upload-display {
+    display: block;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 24px;
+    object-fit: contain;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: 0 auto;
+    border: none;
+    outline: none;
+    opacity: 0;
+  }
+
+  .file-upload {
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    position: relative;
+    z-index: 9;
+  }
+</style>
+
+</html>

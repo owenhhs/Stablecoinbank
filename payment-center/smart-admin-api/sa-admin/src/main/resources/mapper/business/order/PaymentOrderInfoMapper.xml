@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lab1024.sa.admin.module.business.order.dao.PaymentOrderInfoDao">
+
+    <!-- 分页查询 -->
+    <select id="queryPage" resultType="net.lab1024.sa.admin.module.business.order.domain.vo.PaymentOrderInfoListVO">
+        SELECT
+        tpoi.id, tpoi.platform_id, tmm.mer_name as platform_name, tpoi.apply_time as pay_time, tpoi.expired_time,
+        tpoi.finished_time, tpoi.order_no, tpoi.amount, tpci.mer_name, tpci.mer_code as mer_no,
+        tpoi.sub_mer_name, tpoi.deposit_type as payment_method, tpoi.account_name, tpoi.bank_account,
+        tpoi.payment_status as pay_status, tpoi.status, tpoi.bill_file_id, tpoi.currency, tpoi.country
+        FROM t_payment_order_info tpoi
+        INNER JOIN t_payment_channel_info tpci ON tpci.id = tpoi.channel_id
+        INNER JOIN t_merchant_manage tmm ON tpoi.platform_id = tmm.id
+        <where>
+            <if test="queryForm.platformId != null and queryForm.platformId != ''" >
+                AND tmm.id = #{queryForm.platformId}
+            </if>
+            <if test="queryForm.merNo != null and queryForm.merNo != ''" >
+                AND tpci.mer_code = #{queryForm.merNo}
+            </if>
+            <if test="queryForm.currency != null and queryForm.currency != ''" >
+                AND tpoi.currency = #{queryForm.currency}
+            </if>
+            <if test="queryForm.payStatus != null" >
+                AND tpoi.payment_status = #{queryForm.payStatus}
+            </if>
+            <if test="queryForm.keyword != null and queryForm.keyword != ''" >
+                AND (
+                INSTR(tpoi.order_no, #{queryForm.keyword})
+                OR INSTR(tpoi.sub_mer_name, #{queryForm.keyword})
+                OR tpoi.account_name_hash = #{queryForm.keywordHash}
+                )
+            </if>
+            <if test="queryForm.paymentMethod != null and queryForm.paymentMethod != ''" >
+                AND tpoi.deposit_type = #{queryForm.paymentMethod}
+            </if>
+            <if test="queryForm.startTime != null and queryForm.startTime != 0 and queryForm.endTime != null and queryForm.endTime != 0" >
+                AND tpoi.apply_time >= #{queryForm.startTime}
+                AND tpoi.apply_time &lt;= #{queryForm.endTime}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="getExcelExportData" resultType="net.lab1024.sa.admin.module.business.order.domain.vo.PaymentOrderInfoListVO">
+        SELECT
+        tpoi.id, tpoi.platform_id, tmm.mer_name as platform_name, tpoi.apply_time as pay_time, tpoi.expired_time,
+        tpoi.finished_time, tpoi.order_no, tpoi.amount, tpci.mer_name, tpci.mer_code as mer_no,
+        tpoi.sub_mer_name, tpoi.deposit_type as payment_method, tpoi.account_name, tpoi.bank_account,
+        tpoi.payment_status as pay_status, tpoi.status, tpoi.bill_file_id, tpoi.currency, tpoi.country
+        FROM t_payment_order_info tpoi
+        INNER JOIN t_payment_channel_info tpci ON tpci.id = tpoi.channel_id
+        INNER JOIN t_merchant_manage tmm ON tpoi.platform_id = tmm.id
+        <where>
+            <if test="queryForm.platformId != null and queryForm.platformId != ''" >
+                AND tmm.id = #{queryForm.platformId}
+            </if>
+            <if test="queryForm.merNo != null and queryForm.merNo != ''" >
+                AND tpci.mer_code = #{queryForm.merNo}
+            </if>
+            <if test="queryForm.currency != null and queryForm.currency != ''" >
+                AND tpoi.currency = #{queryForm.currency}
+            </if>
+            <if test="queryForm.payStatus != null" >
+                AND tpoi.payment_status = #{queryForm.payStatus}
+            </if>
+            <if test="queryForm.orderNo != null and queryForm.orderNo != ''" >
+                AND tpoi.order_no = #{queryForm.orderNo}
+            </if>
+            <if test="queryForm.startTime != null and queryForm.startTime != 0 and queryForm.endTime != null and queryForm.endTime != 0" >
+                AND tpoi.apply_time >= #{queryForm.startTime}
+                AND tpoi.apply_time &lt;= #{queryForm.endTime}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="countExcelExportData" resultType="java.lang.Long" >
+        SELECT COUNT(*)
+        FROM t_payment_order_info tpoi
+        INNER JOIN t_payment_channel_info tpci ON tpci.id = tpoi.channel_id
+        INNER JOIN t_merchant_manage tmm ON tpoi.platform_id = tmm.id
+        <where>
+            <if test="queryForm.platformId != null and queryForm.platformId != ''" >
+                AND tmm.id = #{queryForm.platformId}
+            </if>
+            <if test="queryForm.merNo != null and queryForm.merNo != ''" >
+                AND tpci.mer_code = #{queryForm.merNo}
+            </if>
+            <if test="queryForm.currency != null and queryForm.currency != ''" >
+                AND tpoi.currency = #{queryForm.currency}
+            </if>
+            <if test="queryForm.payStatus != null" >
+                AND tpoi.payment_status = #{queryForm.payStatus}
+            </if>
+            <if test="queryForm.orderNo != null and queryForm.orderNo != ''" >
+                AND tpoi.order_no = #{queryForm.orderNo}
+            </if>
+            <if test="queryForm.startTime != null and queryForm.startTime != 0 and queryForm.endTime != null and queryForm.endTime != 0" >
+                AND tpoi.apply_time >= #{queryForm.startTime}
+                AND tpoi.apply_time &lt;= #{queryForm.endTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryTodayOrderCount" resultType="net.lab1024.sa.admin.module.business.order.domain.vo.OrderCountVO">
+        SELECT tpci.id AS channel_id,
+        COALESCE(tpoi.total_amount, 0) AS total_amount,
+        COALESCE(tpoi.order_count, 0) AS order_count
+        FROM t_payment_channel_info tpci
+        LEFT JOIN (
+            SELECT channel_id, sum(amount) AS total_amount, count(*) AS order_count
+            FROM t_payment_order_info
+            WHERE status != 3
+            AND payment_status != 3
+            AND create_time BETWEEN CONCAT( CURDATE(), ' 00:00:00' )
+            AND CONCAT( CURDATE(), ' 23:59:59' )
+            GROUP BY channel_id
+            ORDER BY order_count, total_amount
+        ) AS tpoi ON tpci.id = tpoi.channel_id
+        WHERE tpci.id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+
+    </select>
+
+    <select id="queryDashboardOrderToday" resultType="net.lab1024.sa.admin.module.business.dashboard.domain.vo.DashboardOrderTodayVO">
+        SELECT
+            tpci.id AS channel_id,
+            tpci.mer_code AS mer_code,
+            tpci.mer_name AS channel_name,
+            COALESCE(tpoi.total_amount, 0) AS total_amount_payment,
+            COALESCE(tpoi.order_count, 0) AS total_order_count_payment
+        FROM t_payment_channel_info tpci
+        LEFT JOIN (
+        SELECT channel_id, sum(amount) AS total_amount, count(*) AS order_count
+        FROM t_payment_order_info
+        WHERE status = 2
+        AND create_time BETWEEN CONCAT( CURDATE(), ' 00:00:00' )
+        AND CONCAT( CURDATE(), ' 23:59:59' )
+        GROUP BY channel_id
+        ORDER BY order_count, total_amount
+        ) AS tpoi ON tpci.id = tpoi.channel_id
+    </select>
+
+
+</mapper>

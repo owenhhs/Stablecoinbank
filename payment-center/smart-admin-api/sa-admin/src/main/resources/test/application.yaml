@@ -1,0 +1,88 @@
+#############################################################################################################
+#                                                                                                           #
+# 为了减少重复配置，本配置文件为此sa-admin的独有配置，更多配置请查看 sa-base 项目中的 sa-base.yaml 通用配置文件。      #
+# 其中此文件中配置可以覆盖 sa-base.yaml 中的通用配置，具体实现类请看类：YamlProcessor.java                          #
+#                                                                                                           #
+#############################################################################################################
+
+# 项目配置: 名称、日志目录
+project:
+  name: sa-admin
+  log-directory: /opt/logs/${project.name}/${spring.profiles.active}
+
+# 项目端口和url根路径
+server:
+  port: 1024
+  servlet:
+    context-path: /
+
+# 环境
+spring:
+  profiles:
+    active: '@profiles.active@'
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+
+# swagger文档
+swagger:
+  host: localhost:${server.port}
+  tag-class: net.lab1024.sa.admin.constant.AdminSwaggerTagConst
+
+
+####################################### 安全等级保护 相关配置 ##################################################
+#                                                                                                            #
+# 建议开启 "三级等保" 所要求的配置，具体如下：                                                                     #
+#   1）连续登录失败 5 次锁定账户 30 分钟，                                                                       #
+#   2）登录超时时长建议为 30分钟，超过此时间没有访问系统会重新要求登录                                               #
+#   3）密码复杂度至少三种字符，最小 8 位                                                                         #
+#                                                                                                           #
+#############################################################################################################
+
+classified-protect:
+  # 连续登录失败次数则锁定，-1表示不受限制，可以一直尝试登录
+  login-max-fail-times: 5
+  # 连续登录失败锁定时间（单位：秒），-1表示不锁定，建议锁定30分钟
+  login-fail-locked-seconds: 1800
+  # 密码复杂度开启（默认复杂度为：至少三种字符，最小 8 位）, true 开启，false 不开启，建议开启
+  password-complexity-enabled: true
+
+sa-token:
+  # token 最低活跃频率（单位：秒），如果 token 超过此时间没有访问系统就会被冻结，默认-1 代表不限制，永不冻结
+  active-timeout: 14400
+  # token 有效期（单位：秒） 1天（86400秒），-1 代表永久有效
+  timeout: 86400
+
+log:
+  defender:
+    enable: true # 启用log4j2-defender
+    include-logger-prefix: net.lab1024.sa # 通过logger所属类的全类名前缀，指定脱敏范围（,多个实用逗号分割）
+    opt: default_string # 指定脱敏器
+    config-string:
+      key-value-delimiter: COLON,EQUAL,ARROW
+      compat-backslash: true
+      strategies: # 指定脱敏策略
+        com.ideaaedi.log4j2.defender.strategy.SimpleDefenderStrategy__NAME: accountName,depositHolder
+        com.ideaaedi.log4j2.defender.strategy.SimpleDefenderStrategy__ADDRESS: address
+        com.ideaaedi.log4j2.defender.strategy.SimpleDefenderStrategy__ACCOUNT_NO: bankAccount
+        com.ideaaedi.log4j2.defender.strategy.SimpleDefenderStrategy__EMAIL: email
+        com.ideaaedi.log4j2.defender.strategy.SimpleDefenderStrategy__PHONE_NUMBER: phone,mobile
+
+zfx:
+  pay:
+    url: ${SERVER_DOMAIN}/zfx/order/payment/
+    urlv2: ${WEB_DOMAIN}/#/cashier/
+    chooseurl: ${SERVER_DOMAIN}/zfx/order/paymentchoose/
+    api:
+      domain: ${SERVER_DOMAIN}
+    time: 7200
+    refuse:
+      xinjiang:
+        channelid: ${REFUSE_XJ_CHANNEL_ID}
+  user:
+    lock:
+      channelid: ${LOCK_USER_CHANNEL}
+    sms:
+      phone: ${SMS_PHONE}
+

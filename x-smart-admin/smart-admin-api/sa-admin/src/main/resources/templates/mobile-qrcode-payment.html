@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>ZFX支付信息</title>
+</head>
+<body class="body">
+<div class="top-header">
+    <div class="top-title">**汇款请勿备注任何信息**</div>
+    <div class="pay-info-title">请确认您的支付信息：</div>
+    <div class="pay-price-box">
+        <span class="pay-info-t">支付金额</span>
+        <span class="pay-info-label" th:text="'￥' + ${price} + '元'"></span>
+    </div>
+    <div class="pay-time-box">
+        <span class="pay-info-t">支付倒计时</span>
+        <span class="pay-info-label" id="timer">9分17秒</span>
+    </div>
+</div>
+<div class="payment">
+    <div class="unionpay-tip">请使用<span th:text="${paymentChannel}"></span>扫码完成支付</div>
+    <div class="other-tip">支付完成后，请点击下方的“我已付款”按钮</div>
+    <div class="payment-qrcode">
+        <img th:src="${qrcode}" alt="qrcode">
+    </div>
+</div>
+<div class="bottom-tip">
+    <p style="font-size: 24px">提示：</p>
+    <p>1、请按实付金额转账</p>
+    <p>2、请使用本人银行卡支付，不要使用第三者银行卡付款，否则会造成交易失败</p>
+    <p>3、请在支付完成之后点击我已付款</p>
+    <p>4、<span style="color: #E13730">汇款请勿备注任何信息</span></p>
+    <p>5、<span style="color: #E13730">工商银行系统维护，暂时不支持工商银行卡支付，请使用其他银行卡支付</span></p>
+</div>
+<div class="footer">
+    <button class="submit" onclick="onPaid()">我已付款</button>
+    <button class="cancel" onclick="onCancel()">取消订单</button>
+</div>
+
+<div class="affirm-alert" id="affirm-alert">
+    <div class="alert-box">
+        <div class="alert-close">
+            <span role="img" aria-label="inbox" onclick="onClose()">
+                <svg viewBox="0 0 1024 1024" focusable="false" data-icon="inbox" width="1em" height="1em"
+                     fill="currentColor" aria-hidden="true"><path
+                        d="M563.8 512l262.5-312.9c4.4-5.2 0.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9c-4.4 5.2-0.7 13.1 6.1 13.1h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"></path></svg>
+            </span>
+        </div>
+        <div class="alert-title">付款确认</div>
+        <div class="alert-upload-box" id="alert-upload-box">
+            <input accept="" multiple="" type="file" style="display: none;">
+            <span role="img" aria-label="inbox" class="anticon-inbox"><svg viewBox="0 0 1024 1024" focusable="false"
+                                                                           data-icon="inbox" width="1em" height="1em"
+                                                                           fill="currentColor" aria-hidden="true"><path
+                    d="M885.2 446.3l-.2-.8-112.2-285.1c-5-16.1-19.9-27.2-36.8-27.2H281.2c-17 0-32.1 11.3-36.9 27.6L139.4 443l-.3.7-.2.8c-1.3 4.9-1.7 9.9-1 14.8-.1 1.6-.2 3.2-.2 4.8V830a60.9 60.9 0 0060.8 60.8h627.2c33.5 0 60.8-27.3 60.9-60.8V464.1c0-1.3 0-2.6-.1-3.7.4-4.9 0-9.6-1.3-14.1zm-295.8-43l-.3 15.7c-.8 44.9-31.8 75.1-77.1 75.1-22.1 0-41.1-7.1-54.8-20.6S436 441.2 435.6 419l-.3-15.7H229.5L309 210h399.2l81.7 193.3H589.4zm-375 76.8h157.3c24.3 57.1 76 90.8 140.4 90.8 33.7 0 65-9.4 90.3-27.2 22.2-15.6 39.5-37.4 50.7-63.6h156.5V814H214.4V480.1z"></path></svg></span>
+            <p id="upload-tip xtip">请点击选择银行回单截图上传</p>
+            <p id="uploaded-tip xtip" style="display: none;">请点击确认按钮</p>
+        </div>
+        <button class="alert-button" onclick="onConfirm()">确认</button>
+    </div>
+
+</div>
+</body>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var token = /*[[${token}]]*/ {};
+    var durationTime = /*[[${time}]]*/ {};
+    var account = /*[[${account}]]*/ {};
+    var bank = /*[[${bank}]]*/ {};
+    var address = /*[[${address}]]*/ {};
+    var cardno = /*[[${cardno}]]*/ {};
+    var callback = /*[[${callback}]]*/ {};
+    var domain = /*[[${domain}]]*/ {};
+
+    var chooseFiles = null;
+
+    function onClose() {
+        var alert = document.getElementById('affirm-alert');
+        chooseFiles = null
+        alert.style.display = "none"
+    }
+
+    function onPaid() {
+        var alert = document.getElementById('affirm-alert');
+        alert.style.display = "flex"
+    }
+
+    function onConfirm() {
+        if (chooseFiles === null || chooseFiles === undefined || chooseFiles.length === 0) {
+            alert('请选择银行回单截图上传！！！');
+            return
+        }
+        var formData = new FormData();
+        formData.append('file', chooseFiles[0]);
+        formData.append('token', token);
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', domain + '/openapi/order/v1/ly/commgr/payment/affirm');
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                window.location = callback
+            } else {
+                alert('文件上传失败');
+            }
+        };
+        xhr.send(formData);
+    }
+
+    function onCancel() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', domain + '/openapi/order/v1/ly/commgr/payment/cancel', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                // 请求成功，处理响应
+                window.location = callback
+            }
+        };
+        let formData = {
+            token: token,
+            payStatus: 3
+        }
+        xhr.send(JSON.stringify(formData)); // 将对象转换为JSON字符串
+    }
+
+    async function onCopy(t) {
+        var value = '';
+        if (t === 'account') {
+            value = account
+        } else if (t === 'bank') {
+            value = bank
+        } else if (t === 'address') {
+            value = address
+        } else if (t === 'cardno') {
+            value = cardno
+        }
+        copyTxt(value)
+    }
+
+    function copyTxt(text) {
+        var dom = document.createElement('textarea');
+        dom.value = text;
+        dom.setAttribute('style', 'display: block;width: 1px;height: 1px;');
+        document.body.appendChild(dom);
+        dom.select();
+        var result = document.execCommand('copy');
+        document.body.removeChild(dom);
+        if (result) {
+            alert("复制成功");
+        } else {
+            alert("复制失败，请长按复制");
+        }
+    }
+
+
+    function startTimer(duration, display) {
+        var timer = duration, minutes, seconds;
+        setInterval(function () {
+            minutes = parseInt(timer / 60 % 60, 10);
+            seconds = parseInt(timer % 60, 10);
+            if (minutes === 0) {
+                display.textContent = seconds + " 秒";
+            } else if (seconds === 0) {
+                display.textContent = minutes + "分";
+            } else {
+                display.textContent = minutes + "分" + seconds + " 秒";
+            }
+            if (--timer < 0) {
+                timer = duration;
+            }
+        }, 1000);
+    }
+
+    window.onload = function () {
+        var display = document.querySelector('#timer');
+        startTimer(durationTime, display);
+    };
+
+
+    // 获取上传区域的DOM元素
+    var uploadArea = document.getElementById('alert-upload-box');
+
+    // 监听拖拽事件
+    uploadArea.addEventListener('dragover', function (event) {
+        event.stopPropagation();
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'copy'; // 显示为复制状态
+    });
+
+    uploadArea.addEventListener('drop', function (event) {
+        event.stopPropagation();
+        event.preventDefault();
+
+        // 处理文件
+        handleFiles(event.dataTransfer.files);
+    });
+
+    // 监听点击事件，打开文件选择对话框
+    uploadArea.addEventListener('click', function () {
+        // 创建一个点击事件，触发文件选择
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.click();
+
+        // 监听文件选择后的变化
+        input.addEventListener('change', function () {
+            handleFiles(this.files);
+        });
+    });
+
+    // 处理文件的函数
+    function handleFiles(files) {
+        // 可以在这里添加代码来处理文件
+        if (files.length > 0) {
+            // files
+            chooseFiles = files;
+            console.log('Files selected:', files);
+
+            var uploadTip = document.getElementById('upload-tip');
+            var uploadedTip = document.getElementById('uploaded-tip');
+
+            uploadTip.style.display = 'none';
+            uploadedTip.style.display = 'block';
+        }
+    }
+
+    /*]]>*/
+</script>
+
+<style>
+    .body {
+        margin: 0;
+        background-color: #FCF5EF;
+    }
+
+    .top-header {
+        width: 100vw;
+        height: 480px;
+        background-color: #5072F6;
+    }
+
+    .top-title {
+        padding-top: 40px;
+        color: #b52d27;
+        font-size: 48px;
+        width: 100%;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .pay-info-title {
+        color: white;
+        font-size: 48px;
+        font-weight: bold;
+        padding-left: 60px;
+        padding-top: 60px;
+    }
+
+    .pay-price-box {
+        color: white;
+        font-size: 36px;
+        font-weight: bold;
+        padding-left: 60px;
+        padding-top: 20px;
+    }
+
+    .pay-time-box {
+        color: white;
+        font-size: 36px;
+        font-weight: bold;
+        padding-left: 60px;
+        padding-top: 40px;
+    }
+
+    .pay-info-t {
+        display: inline-block;
+        width: 200px;
+    }
+
+    .pay-info-label {
+        padding-left: 120px;
+    }
+
+    .payment {
+        text-align: center;
+    }
+
+    .payment-qrcode {
+        img {
+            margin-top: 40px;
+            width: 500px;
+            height: 500px;
+        }
+    }
+
+    .unionpay-tip {
+        padding-top: 40px;
+        font-size: 40px;
+        font-weight: bold;
+    }
+
+    .other-tip {
+        padding-top: 80px;
+        font-size: 28px;
+    }
+
+    .bottom-tip {
+        padding-left: 60px;
+        font-size: 28px;
+        line-height: 36px;
+    }
+
+    .footer {
+        margin-top: 40px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 80px;
+    }
+
+    .submit {
+        font-size: 32px;
+        color: #fff;
+        background-color: #98B893;
+        border: none;
+        padding: 20px 60px;
+        cursor: pointer;
+        border-radius: 10px;
+        outline: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease; /* 平滑过渡效果 */
+    }
+
+    .submit:active {
+        background-color: #658a5f;
+        box-shadow: none;
+        transform: translateY(4px);
+    }
+
+    .submit:disabled {
+        background-color: #cccccc;
+        color: #666666;
+        cursor: not-allowed;
+    }
+
+    .cancel {
+        margin-left: 80px;
+        font-size: 32px;
+        color: #f83f3f;
+        background-color: #ffffff;
+        border: 2px solid #f83f3f;
+        padding: 20px 60px;
+        cursor: pointer;
+        border-radius: 10px;
+        outline: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease; /* 平滑过渡效果 */
+    }
+
+    .cancel:active {
+        background-color: #c19090;
+        box-shadow: none;
+        transform: translateY(4px);
+    }
+
+    .cancel:disabled {
+        background-color: #cccccc;
+        color: #666666;
+        cursor: not-allowed;
+    }
+
+    .affirm-alert {
+        position: fixed;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 999;
+        background-color: rgba(0, 0, 0, 0.6);
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+    }
+
+    .alert-close {
+        position: absolute;
+        display: inline-block;
+        font-size: 40px;
+        width: 50%;
+        text-align: right;
+        margin-top: 20px;
+
+        span {
+            margin-right: 40px;
+        }
+    }
+
+    .alert-box {
+        position: absolute;
+        width: 80%;
+        height: 580px;
+        background-color: white;
+        border-radius: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        text-align: center;
+    }
+
+    .alert-title {
+        margin-top: 40px;
+        font-size: 44px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .alert-upload-box {
+        width: 80%;
+        height: 240px;
+        margin-left: 10%;
+        margin-top: 40px;
+        padding-top: 40px;
+        background-color: #FAFAFA;
+        border-radius: 16px;
+        border: 1px dashed #656565;
+        transition: all 0.3s ease;
+        text-align: center;
+        cursor: pointer;
+        font-size: 40px;
+    }
+
+    .anticon-inbox {
+        color: #5072F6;
+        font-size: 96px;
+    }
+
+    .xtip {
+        margin-top: 20px;
+    }
+
+    .alert-button {
+        margin-top: 40px;
+        padding: 15px 60px;
+        cursor: pointer;
+        border-radius: 10px;
+        outline: none;
+        font-size: 32px;
+    }
+</style>
+
+</html>

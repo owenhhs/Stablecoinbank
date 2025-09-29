@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lab1024.sa.admin.module.business.settle.dao.PaymentSettleDetailDao">
+
+    <!-- 分页查询 -->
+    <select id="queryPage" resultType="net.lab1024.sa.admin.module.business.settle.domain.vo.SettleDetailVO">
+        SELECT
+        *
+        FROM t_payment_settle_detail
+        WHERE id > 0
+        <if test="queryForm.settleId != null">
+            and settle_id = #{queryForm.settleId}
+        </if>
+        <if test="queryForm.settleStartDate != null">
+            and create_time &gt;= concat(#{queryForm.settleStartDate,jdbcType=VARCHAR}, ' 00:00:00')
+        </if>
+        <if test="queryForm.settleEndDate != null">
+            and create_time &lt;= concat(#{queryForm.settleEndDate,jdbcType=VARCHAR}, ' 23:59:59')
+        </if>
+        <if test="queryForm.settleIds != null and queryForm.settleIds.size > 0">
+            and settle_id in
+            <foreach collection="queryForm.settleIds" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+</mapper>

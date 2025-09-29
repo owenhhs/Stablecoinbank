@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lab1024.sa.admin.module.business.payment.channel.dao.PaymentUserDao">
+
+    <select id="queryPage" resultType="net.lab1024.sa.admin.module.business.payment.channel.domain.vo.PaymentUserVO">
+        SELECT
+        id, username, ext_user_id AS extUserId, is_xj AS isXj, black,
+        create_time AS createTime, update_time AS updateTime
+        FROM t_payment_user
+        WHERE id > 0
+        <if test="queryForm.userId != null">
+            and id = #{queryForm.currency}
+        </if>
+        <if test="queryForm.userName != null and queryForm.userName != ''">
+            and username_hash = #{queryForm.userName}
+        </if>
+        <if test="queryForm.isXj != null">
+            and is_xj = #{queryForm.isXj}
+        </if>
+        <if test="queryForm.black != null">
+            and black = #{queryForm.black}
+        </if>
+    </select>
+</mapper>

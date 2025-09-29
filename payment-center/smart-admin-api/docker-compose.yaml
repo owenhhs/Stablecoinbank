@@ -1,0 +1,33 @@
+services:
+  payment-center-service:
+    image: payment-center-service:${TAG}
+    restart: always
+    environment:
+      - MYSQL_URL=jdbc:mysql://ai_plan-mysql-1:3306/smart_admin_v3?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+      - MYSQL_USERNAME=root
+      - MYSQL_PASSWORD=123456
+      - REDIS_DATABASE=0
+      - REDIS_HOST=ai_plan-redis-1
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=
+      - MYBATIS_ENCRYPT_ENABLE=false
+      - MYBATIS_ENCRYPT_SECRETKEY=your-secret-key-here
+      - RSA_PRIVATE_KEY=your-private-key-here
+      - RSA_PUBLIC_KEY=your-public-key-here
+      - STORAGE_REGION=us-east-1
+      - STORAGE_ENDPOINT=s3.amazonaws.com
+      - STORAGE_BACKETNAME=your-bucket-name
+      - STORAGE_ACCESSKEY=your-access-key
+      - STORAGE_SECRETKEY=your-secret-key
+      - SERVER_DOMAIN=http://localhost:${SERVICE_PORT}
+      - WEB_DOMAIN=http://localhost:1881
+      - REFUSE_XJ_CHANNEL_ID=
+      - LOCK_USER_CHANNEL=
+      - SMS_PHONE=
+    ports:
+      - "${SERVICE_PORT}:1024"
+    volumes:
+      - /opt/logs/${ENV}:/opt/logs
+    external_links:
+      - ai_plan-mysql-1:mysql
+      - ai_plan-redis-1:redis

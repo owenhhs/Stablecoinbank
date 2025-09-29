@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lab1024.sa.admin.module.business.order.dao.SettleBillDao">
+
+    <!-- 分页查询 -->
+    <select id="queryPage" resultType="net.lab1024.sa.admin.module.business.order.domain.vo.SettleBillListVO">
+        SELECT
+        tpoi.id, tpoi.trade_time, tpci.mer_name, tpci.mer_code as mer_no, tpoi.trade_type, tpoi.trade_limit,
+        tpoi.settle_status, tpoi.trade_amount, tpoi.order_count, tpoi.exchange_rate,
+        tpoi.brokerage, tpoi.award, tpoi.settle_amount, tpoi.settle_url, tpoi.currency
+        FROM t_settle_bill tpoi
+        LEFT JOIN t_payment_channel_info tpci ON tpci.id = tpoi.channel_id
+        WHERE 1 = 1
+        <if test="queryForm.currency != null and queryForm.currency != ''" >
+            AND tpoi.currency = #{queryForm.currency}
+        </if>
+        <if test="queryForm.merNo != null and queryForm.merNo != ''" >
+            AND tpci.mer_code = #{queryForm.merNo}
+        </if>
+        <if test="queryForm.settleStatus != null" >
+            AND tpoi.settle_status = #{queryForm.settleStatus}
+        </if>
+        <if test="queryForm.startTime != null and queryForm.startTime != '' and queryForm.endTime != null and queryForm.endTime != ''" >
+            AND tpoi.trade_time >= #{queryForm.startTime}
+            AND tpoi.trade_time &lt;= #{queryForm.endTime}
+        </if>
+    </select>
+
+    <select id="getExcelExportData" resultType="net.lab1024.sa.admin.module.business.order.domain.vo.SettleBillListVO">
+        SELECT
+        tpoi.id, tpoi.trade_time, tpci.mer_name, tpci.mer_code as mer_no, tpoi.trade_type, tpoi.trade_limit,
+        tpoi.settle_status, tpoi.trade_amount, tpoi.order_count, tpoi.exchange_rate,
+        tpoi.brokerage, tpoi.award, tpoi.settle_amount, tpoi.currency
+        FROM t_settle_bill tpoi
+        LEFT JOIN t_payment_channel_info tpci ON tpci.id = tpoi.channel_id
+        WHERE 1 = 1
+        <if test="queryForm.currency != null and queryForm.currency != ''" >
+            AND tpoi.currency = #{queryForm.currency}
+        </if>
+        <if test="queryForm.merNo != null and queryForm.merNo != ''" >
+            AND tpci.mer_code = #{queryForm.merNo}
+        </if>
+        <if test="queryForm.settleStatus != null" >
+            AND tpoi.settle_status = #{queryForm.settleStatus}
+        </if>
+        <if test="queryForm.startTime != null and queryForm.startTime != '' and queryForm.endTime != null and queryForm.endTime != ''" >
+            AND tpoi.trade_time >= #{queryForm.startTime}
+            AND tpoi.trade_time &lt;= #{queryForm.endTime}
+        </if>
+    </select>
+
+    <select id="countExcelExportData" resultType="java.lang.Long" >
+        SELECT COUNT(*)
+        FROM t_settle_bill tpoi
+        LEFT JOIN t_payment_channel_info tpci ON tpci.id = tpoi.channel_id
+        WHERE 1 = 1
+        <if test="queryForm.currency != null and queryForm.currency != ''" >
+            AND tpoi.currency = #{queryForm.currency}
+        </if>
+        <if test="queryForm.merNo != null and queryForm.merNo != ''" >
+            AND tpci.mer_code = #{queryForm.merNo}
+        </if>
+        <if test="queryForm.settleStatus != null" >
+            AND tpoi.settle_status = #{queryForm.settleStatus}
+        </if>
+        <if test="queryForm.startTime != null and queryForm.startTime != '' and queryForm.endTime != null and queryForm.endTime != ''" >
+            AND tpoi.trade_time >= #{queryForm.startTime}
+            AND tpoi.trade_time &lt;= #{queryForm.endTime}
+        </if>
+    </select>
+
+
+
+
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lab1024.sa.admin.module.business.payment.channel.dao.PaymentChannelPayInfoCfgDao">
+
+    <!-- 分页查询 -->
+    <select id="queryPage" resultType="net.lab1024.sa.admin.module.business.payment.channel.domain.vo.PaymentChannelPayInfoCfgVO">
+        SELECT
+        pcpic.*, pci.mer_name
+        FROM t_payment_channel_pay_info_cfg pcpic
+        LEFT JOIN t_payment_channel_info pci ON pcpic.department_id = pci.department_id
+        WHERE 1=1
+        <if test="queryForm.departmentIds != null and queryForm.departmentIds.size > 0 and queryForm.administratorFlag!=1">
+            and pcpic.department_id in
+            <foreach collection="queryForm.departmentIds" open="(" close=")" separator="," item="item" >
+                #{item}
+            </foreach>
+        </if>
+        <if test="queryForm.type != null and queryForm.type != ''">
+            and pcpic.type like concat(#{queryForm.type}, '%')
+        </if>
+        <if test="queryForm.username != null and queryForm.username != ''">
+            and pcpic.username like concat(#{queryForm.username}, '%')
+        </if>
+        <if test="queryForm.bankNo != null and queryForm.bankNo != ''">
+            and pcpic.bank_no like concat(#{queryForm.bankNo}, '%')
+        </if>
+        <if test="queryForm.status != null">
+            and pcpic.status = #{queryForm.status}
+        </if>
+        ORDER BY pcpic.create_time DESC
+    </select>
+
+    <select id="queryCurrencyOptions" resultType="java.lang.String" >
+        SELECT currency FROM t_payment_channel_pay_info_cfg
+        WHERE id > 0
+        <if test="departmentId != null and departmentId != '' and isAdmin != 1">
+            and department_id = #{departmentId}
+        </if>
+        GROUP BY currency
+    </select>
+
+</mapper>

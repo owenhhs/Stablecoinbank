@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lab1024.sa.admin.module.business.order.dao.CashOrderInfoDao">
+
+    <!-- 分页查询 -->
+    <select id="queryPage" resultType="net.lab1024.sa.admin.module.business.order.domain.vo.CashOrderInfoVO">
+        SELECT
+        *
+        FROM t_cash_order_info
+    </select>
+
+    <select id="queryTodayOrderCount" resultType="net.lab1024.sa.admin.module.business.order.domain.vo.OrderCountVO">
+        SELECT tpci.id AS channel_id,
+        COALESCE(tpoi.total_amount, 0) AS total_amount,
+        COALESCE(tpoi.order_count, 0) AS order_count
+        FROM t_payment_channel_info tpci
+        LEFT JOIN (
+            SELECT channel_id, sum(amount) AS total_amount, count(*) AS order_count
+            FROM t_cash_order_info
+            WHERE create_time BETWEEN CONCAT( CURDATE(), ' 00:00:00' ) AND CONCAT( CURDATE(), ' 23:59:59' )
+            GROUP BY channel_id
+            ORDER BY order_count, total_amount
+        ) AS tpoi ON tpci.id = tpoi.channel_id
+        WHERE tpci.id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+
+    </select>
+
+</mapper>

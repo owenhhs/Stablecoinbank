@@ -1,0 +1,6 @@
+services:
+  payment-center-web:
+    image: payment-center-web:${TAG}
+    restart: always
+    ports:
+      - "${WEB_PORT}:80"

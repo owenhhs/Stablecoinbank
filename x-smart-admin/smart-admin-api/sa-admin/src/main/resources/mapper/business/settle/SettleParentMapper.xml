@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lab1024.sa.admin.module.business.settle.dao.PaymentSettleParentDao">
+
+    <!-- 分页查询 -->
+    <select id="queryPage" resultType="net.lab1024.sa.admin.module.business.settle.domain.vo.SettleVO">
+        SELECT
+        *
+        FROM t_payment_settle_parent
+        WHERE 1=1
+        <if test="queryForm.currency != null and queryForm.currency != ''">
+            and currency = #{queryForm.currency}
+        </if>
+        <if test="queryForm.departmentId != null">
+            and department_id = #{queryForm.departmentId}
+        </if>
+        <if test="queryForm.settleStatus != null and queryForm.settleStatus != ''">
+            and settle_status = #{queryForm.settleStatus}
+        </if>
+        <if test="queryForm.settleStartDate != null and queryForm.settleStartDate != ''
+                    and queryForm.settleEndDate != null and queryForm.settleEndDate != ''">
+            and trade_date >= #{queryForm.settleStartDate,jdbcType=VARCHAR}
+            and trade_date &lt;= #{queryForm.settleEndDate,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+
+    <select id="getExcelExportData" resultType="net.lab1024.sa.admin.module.business.settle.domain.vo.SettleVO">
+        SELECT
+        *
+        FROM t_payment_settle_parent
+        WHERE 1=1
+        <if test="queryForm.currency != null and queryForm.currency != ''">
+            and currency = #{queryForm.currency}
+        </if>
+        <if test="queryForm.departmentId != null">
+            and department_id = #{queryForm.departmentId}
+        </if>
+        <if test="queryForm.settleStatus != null and queryForm.settleStatus != ''">
+            and settle_status = #{queryForm.settleStatus}
+        </if>
+        <if test="queryForm.settleStartDate != null and queryForm.settleStartDate != ''
+                    and queryForm.settleEndDate != null and queryForm.settleEndDate != ''">
+            and trade_date >= #{queryForm.settleStartDate,jdbcType=VARCHAR}
+            and trade_date &lt;= #{queryForm.settleEndDate,jdbcType=VARCHAR}
+        </if>
+    </select>
+
+
+</mapper>

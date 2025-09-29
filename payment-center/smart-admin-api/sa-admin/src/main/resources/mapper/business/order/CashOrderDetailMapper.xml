@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="net.lab1024.sa.admin.module.business.order.dao.CashOrderDetailDao">
+
+    <!-- 分页查询 -->
+    <select id="queryPage" resultType="net.lab1024.sa.admin.module.business.order.domain.vo.CashOrderDetailVO">
+        SELECT
+        *
+        FROM t_cash_order_detail
+        <where>
+            <!--订单编号-->
+            <if test="queryForm.orderNo != null">
+                AND order_no = #{queryForm.orderNo}
+            </if>
+            <!--交易状态-->
+            <if test="queryForm.status != null">
+                AND status = #{queryForm.status}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryDashboardOrderToday" resultType="net.lab1024.sa.admin.module.business.dashboard.domain.vo.DashboardOrderTodayVO">
+        SELECT
+            tpci.id AS channel_id,
+            tpci.mer_code AS mer_code,
+            tpci.mer_name AS channel_name,
+            COALESCE(tpoi.total_amount, 0) AS total_amount_cash,
+            COALESCE(tpoi.order_count, 0) AS total_order_count_cash
+        FROM t_payment_channel_info tpci
+        LEFT JOIN (
+            SELECT channel_id, sum(amount) AS total_amount, count(*) AS order_count
+            FROM t_cash_order_detail
+            WHERE status = 2
+            AND create_time BETWEEN CONCAT( CURDATE(), ' 00:00:00' ) AND CONCAT( CURDATE(), ' 23:59:59' )
+            GROUP BY channel_id
+            ORDER BY order_count, total_amount
+        ) AS tpoi ON tpci.id = tpoi.channel_id
+    </select>
+</mapper>
