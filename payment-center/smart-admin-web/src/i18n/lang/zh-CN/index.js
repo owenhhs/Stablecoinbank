@@ -82,7 +82,9 @@ export default {
   
   // 登录相关
   'login.title': '账号登录',
-  'login.welcome.title': '欢迎登录 SmartAdmin V3',
+  'login.welcome.title': '欢迎登录 ZFX 支付中心',
+  'login.welcome.description': 'SmartAdmin 是由 河南·洛阳 1024创新实验室（1024Lab）基于SpringBoot + Sa-Token + Mybatis-Plus 和 Vue3 + Vite5 + Ant Design Vue 4 (同时支持JavaScript和TypeScript双版本) 以「高质量代码」为核心，「简洁、高效、安全」的快速开发平台。致伟大的开发者：我们希望用一套漂亮优雅的代码和一套整洁高效的代码规范，让大家在这浮躁的世界里感受到一股把代码写好的清流！保持谦逊，保持学习，热爱代码，更热爱生活！永远年轻，永远前行！',
+  'login.welcome.wechat': '加微信，骚扰卓大 :)',
   'login.username.placeholder': '请输入用户名',
   'login.password.placeholder': '请输入密码：至少三种字符，最小 8 位',
   'login.captcha.placeholder': '请输入验证码',

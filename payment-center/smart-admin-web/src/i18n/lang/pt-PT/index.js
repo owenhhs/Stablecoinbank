@@ -80,7 +80,9 @@ export default {
   
   // 登录相关
   'login.title': 'Login da conta',
-  'login.welcome.title': 'Bem-vindo ao SmartAdmin V3',
+  'login.welcome.title': 'Bem-vindo ao ZFX Payment Center',
+  'login.welcome.description': 'SmartAdmin é desenvolvido pela 1024Lab de Henan·Luoyang, baseado em SpringBoot + Sa-Token + Mybatis-Plus e Vue3 + Vite5 + Ant Design Vue 4 (suportando versões JavaScript e TypeScript). Uma plataforma de desenvolvimento rápido com \'código de alta qualidade\' como núcleo, \'simples, eficiente, seguro\'.',
+  'login.welcome.wechat': 'Adicionar WeChat, incomodar Zhuoda :)',
   'login.username.placeholder': 'Por favor insira o nome de usuário',
   'login.password.placeholder': 'Por favor insira a senha: pelo menos 3 tipos de caracteres, mínimo 8 dígitos',
   'login.captcha.placeholder': 'Por favor insira o código de verificação',
