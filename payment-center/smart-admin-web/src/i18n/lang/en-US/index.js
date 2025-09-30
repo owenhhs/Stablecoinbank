@@ -95,6 +95,11 @@ export default {
   'login.validation.username': 'Username cannot be empty',
   'login.validation.password': 'Password cannot be empty',
   'login.validation.captcha': 'Verification code cannot be empty',
+  'login.success': 'Login successful',
+  'login.welcome.follow': 'Follow: Hexagon Engineer, Share: Money, Code, Life',
+  'login.notification.title': 'Tips',
+  'login.notification.description': 'SmartAdmin provides 9 login background styles!',
+  'login.notification.button': 'Go and see',
   
   // 首页相关
   'home.department': 'Department',

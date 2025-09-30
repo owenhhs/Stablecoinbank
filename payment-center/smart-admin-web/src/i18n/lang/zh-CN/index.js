@@ -95,6 +95,11 @@ export default {
   'login.validation.username': '用户名不能为空',
   'login.validation.password': '密码不能为空',
   'login.validation.captcha': '验证码不能为空',
+  'login.success': '登录成功',
+  'login.welcome.follow': '关注：六边形工程师，分享：赚钱、代码、生活',
+  'login.notification.title': '温馨提示',
+  'login.notification.description': 'SmartAdmin 提供 9种 登录背景风格哦！',
+  'login.notification.button': '去看看',
   
   // 首页相关
   'home.department': '所属部门',

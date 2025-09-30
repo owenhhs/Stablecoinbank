@@ -26,7 +26,7 @@
           <img :src="gzh" />
           <div class="qr-desc-marquee">
             <div class="marquee">
-              <span>关注：六边形工程师，分享：赚钱、代码、生活</span>
+              <span>{{ $t('login.welcome.follow') }}</span>
             </div>
           </div>
         </div>
@@ -140,8 +140,8 @@
     };
 
     notification['success']({
-      message: '温馨提示',
-      description: 'SmartAdmin 提供 9种 登录背景风格哦！',
+      message: t('login.notification.title'),
+      description: t('login.notification.description'),
       duration: 8,
       onClick: () => {},
       btn: () =>
@@ -154,7 +154,7 @@
             href: 'https://smartadmin.vip/views/v3/front/Login.html',
             onClick: () => {},
           },
-          { default: () => '去看看' }
+          { default: () => t('login.notification.button') }
         ),
     });
   });
@@ -175,7 +175,7 @@
         const res = await loginApi.login(encryptPasswordForm);
         stopRefrestCaptchaInterval();
         localSave(LocalStorageKeyConst.USER_TOKEN, res.data.token ? res.data.token : '');
-        message.success('登录成功');
+        message.success(t('login.success'));
         //更新用户信息到pinia
         useUserStore().setUserLoginInfo(res.data);
         //构建系统的路由
