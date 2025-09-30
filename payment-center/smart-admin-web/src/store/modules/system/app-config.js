@@ -36,7 +36,7 @@ if (appConfigStr) {
  * 获取初始化的语言
  */
 export const getInitializedLanguage = function () {
-  return language;
+  return appDefaultConfig.language; // 始终返回英文作为默认语言
 };
 
 export const useAppConfigStore = defineStore({
