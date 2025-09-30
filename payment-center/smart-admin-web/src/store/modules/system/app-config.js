@@ -13,20 +13,21 @@ import localStorageKeyConst from '/@/constants/local-storage-key-const';
 import { smartSentry } from '/@/lib/smart-sentry';
 import { localRead } from '/@/utils/local-util';
 
-// 始终使用默认配置，忽略本地存储
+// 始终使用默认配置
 let state = { ...appDefaultConfig };
 let language = appDefaultConfig.language; // 默认为英文
 
-// 尝试读取本地存储，但只保留非语言相关的配置
+// 尝试读取本地存储
 let appConfigStr = localRead(localStorageKeyConst.APP_CONFIG);
 if (appConfigStr) {
   try {
     let storedConfig = JSON.parse(appConfigStr);
-    // 保留其他配置，但强制使用英文语言
-    state = {
-      ...storedConfig,
-      language: appDefaultConfig.language // 强制使用英文
-    };
+    // 如果本地存储中没有语言设置，或者语言设置无效，则使用默认英文
+    if (!storedConfig.language || !['en_US', 'zh_CN', 'fr_FR', 'es_ES', 'pt_PT'].includes(storedConfig.language)) {
+      storedConfig.language = appDefaultConfig.language;
+    }
+    state = storedConfig;
+    language = storedConfig.language;
   } catch (e) {
     smartSentry.captureError(e);
   }
@@ -36,7 +37,7 @@ if (appConfigStr) {
  * 获取初始化的语言
  */
 export const getInitializedLanguage = function () {
-  return appDefaultConfig.language; // 始终返回英文作为默认语言
+  return language; // 返回实际的语言设置
 };
 
 export const useAppConfigStore = defineStore({

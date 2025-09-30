@@ -199,6 +199,62 @@ export const MENU_I18N_MAP = {
     fr_FR: 'Documentation d\'aide',
     es_ES: 'Documentación de ayuda',
     pt_PT: 'Documentação de ajuda'
+  },
+  '参数配置': {
+    en_US: 'Parameter Configuration',
+    zh_CN: '参数配置',
+    fr_FR: 'Configuration des paramètres',
+    es_ES: 'Configuración de parámetros',
+    pt_PT: 'Configuração de parâmetros'
+  },
+  '缓存管理': {
+    en_US: 'Cache Management',
+    zh_CN: '缓存管理',
+    fr_FR: 'Gestion du cache',
+    es_ES: 'Gestión de caché',
+    pt_PT: 'Gestão de cache'
+  },
+  '单号管理': {
+    en_US: 'Serial Number Management',
+    zh_CN: '单号管理',
+    fr_FR: 'Gestion des numéros de série',
+    es_ES: 'Gestión de números de serie',
+    pt_PT: 'Gestão de números de série'
+  },
+  '进销存系统': {
+    en_US: 'Inventory Management System',
+    zh_CN: '进销存系统',
+    fr_FR: 'Système de gestion des stocks',
+    es_ES: 'Sistema de gestión de inventario',
+    pt_PT: 'Sistema de gestão de estoque'
+  },
+  '部门员工': {
+    en_US: 'Department Employees',
+    zh_CN: '部门员工',
+    fr_FR: 'Employés du département',
+    es_ES: 'Empleados del departamento',
+    pt_PT: 'Funcionários do departamento'
+  },
+  '文档中心': {
+    en_US: 'Document Center',
+    zh_CN: '文档中心',
+    fr_FR: 'Centre de documentation',
+    es_ES: 'Centro de documentos',
+    pt_PT: 'Centro de documentos'
+  },
+  '网络安全': {
+    en_US: 'Network Security',
+    zh_CN: '网络安全',
+    fr_FR: 'Sécurité réseau',
+    es_ES: 'Seguridad de red',
+    pt_PT: 'Segurança de rede'
+  },
+  '监控服务': {
+    en_US: 'Monitoring Service',
+    zh_CN: '监控服务',
+    fr_FR: 'Service de surveillance',
+    es_ES: 'Servicio de monitoreo',
+    pt_PT: 'Serviço de monitoramento'
   }
 };
 
