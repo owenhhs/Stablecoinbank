@@ -13,17 +13,20 @@ import localStorageKeyConst from '/@/constants/local-storage-key-const';
 import { smartSentry } from '/@/lib/smart-sentry';
 import { localRead } from '/@/utils/local-util';
 
+// 始终使用默认配置，忽略本地存储
 let state = { ...appDefaultConfig };
+let language = appDefaultConfig.language; // 默认为英文
 
+// 尝试读取本地存储，但只保留非语言相关的配置
 let appConfigStr = localRead(localStorageKeyConst.APP_CONFIG);
-let language = appDefaultConfig.language;
 if (appConfigStr) {
   try {
-    state = JSON.parse(appConfigStr);
-    // 强制使用英文作为默认语言，忽略本地存储的语言设置
-    // language = state.language;
-    language = appDefaultConfig.language; // 强制使用英文
-    state.language = appDefaultConfig.language; // 强制覆盖状态中的语言设置
+    let storedConfig = JSON.parse(appConfigStr);
+    // 保留其他配置，但强制使用英文语言
+    state = {
+      ...storedConfig,
+      language: appDefaultConfig.language // 强制使用英文
+    };
   } catch (e) {
     smartSentry.captureError(e);
   }

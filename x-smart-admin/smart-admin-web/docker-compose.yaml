@@ -1,6 +1,0 @@
-services:
-  x-admin-web:
-    image: x-smart-admin-web:${TAG}
-    restart: always
-    ports:
-      - "${WEB_PORT}:80"
