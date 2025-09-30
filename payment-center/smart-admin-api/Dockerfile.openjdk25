@@ -1,0 +1,30 @@
+# Build stage with Maven and OpenJDK 8 (for compatibility)
+FROM maven:3.8.6-openjdk-8 AS builder
+ARG PKG=sa-admin
+ARG ENV=test
+
+COPY ./ /apps/
+WORKDIR /apps/
+RUN sh ./build.sh
+
+# Runtime stage with OpenJDK 25
+FROM eclipse-temurin:25-jre
+WORKDIR /opt/apps/
+
+# Install font support
+RUN apt-get update && apt-get install -y \
+    fontconfig \
+    fonts-dejavu \
+    && rm -rf /var/lib/apt/lists/*
+
+# JAVA_HOME is already set by the base image
+
+# Copy application files
+COPY --from=builder /apps/app.jar /opt/apps/app.jar
+COPY --from=builder /apps/start.sh /opt/apps/start.sh
+
+# Make start script executable
+RUN chmod +x /opt/apps/start.sh
+
+# 指定镜像启动时候的操作，直接运行程序的启动脚本
+CMD ["sh", "/opt/apps/start.sh"]

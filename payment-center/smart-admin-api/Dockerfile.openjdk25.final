@@ -1,0 +1,41 @@
+# Build stage with Maven and OpenJDK 8 (for compatibility)
+FROM maven:3.8.6-openjdk-8 AS builder
+ARG PKG=sa-admin
+ARG ENV=test
+
+COPY ./ /apps/
+WORKDIR /apps/
+RUN sh ./build.sh
+
+# Runtime stage with OpenJDK 25
+FROM openjdk:8-jre-alpine
+WORKDIR /opt/apps/
+
+# Install OpenJDK 25 using Eclipse Temurin
+RUN apk add --no-cache wget bash && \
+    wget -O /tmp/openjdk-25.tar.gz "https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.36%2B7/OpenJDK25U-jdk_x64_linux_hotspot_25.36_7.tar.gz" && \
+    cd /opt && \
+    tar -xzf /tmp/openjdk-25.tar.gz && \
+    mv jdk-25.36+7 java25 && \
+    rm /tmp/openjdk-25.tar.gz && \
+    apk del wget
+
+# Set JAVA_HOME to OpenJDK 25
+ENV JAVA_HOME=/opt/java25
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Install font support for Alpine
+RUN apk add --no-cache fontconfig ttf-dejavu
+
+# Copy application files
+COPY --from=builder /apps/app.jar /opt/apps/app.jar
+COPY --from=builder /apps/start.sh /opt/apps/start.sh
+
+# Make start script executable
+RUN chmod +x /opt/apps/start.sh
+
+# Verify Java version
+RUN java -version
+
+# 指定镜像启动时候的操作，直接运行程序的启动脚本
+CMD ["sh", "/opt/apps/start.sh"]

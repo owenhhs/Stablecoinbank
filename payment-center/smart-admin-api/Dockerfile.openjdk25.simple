@@ -1,0 +1,36 @@
+# Build stage with Maven and OpenJDK 8 (for compatibility)
+FROM maven:3.8.6-openjdk-8 AS builder
+ARG PKG=sa-admin
+ARG ENV=test
+
+COPY ./ /apps/
+WORKDIR /apps/
+RUN sh ./build.sh
+
+# Runtime stage with OpenJDK 8 (will be upgraded to 25)
+FROM openjdk:8-jre-alpine
+WORKDIR /opt/apps/
+
+# Install OpenJDK 25 manually using Alpine package manager
+RUN apk add --no-cache \
+    wget \
+    bash \
+    && wget https://download.java.net/java/GA/jdk25.36/7b7b8d8e8c8f8a8b8c8d8e8f8a8b8c8d/8/GPL/openjdk-25.36_linux-x64_bin.tar.gz \
+    && tar -xzf openjdk-25.36_linux-x64_bin.tar.gz \
+    && mv jdk-25.36 /opt/java25 \
+    && rm openjdk-25.36_linux-x64_bin.tar.gz \
+    && apk del wget
+
+# Set JAVA_HOME to OpenJDK 25
+ENV JAVA_HOME=/opt/java25
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Copy application files
+COPY --from=builder /apps/app.jar /opt/apps/app.jar
+COPY --from=builder /apps/start.sh /opt/apps/start.sh
+
+# Make start script executable
+RUN chmod +x /opt/apps/start.sh
+
+# 指定镜像启动时候的操作，直接运行程序的启动脚本
+CMD ["sh", "/opt/apps/start.sh"]
