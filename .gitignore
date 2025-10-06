@@ -402,6 +402,28 @@ deployment/
 *.jfr
 
 # ===========================================
+# 多语言和国际化调试文件
+# ===========================================
+# 语言调试和测试文件
+*-language-debug.*
+*-language-test.*
+*language-debug.*
+*language-test.*
+*debug-menu.*
+*test-menu-language.*
+*simple-test.*
+
+# 国际化临时文件
+i18n-temp/
+i18n-debug/
+language-fix.*
+language-monitor.*
+language-debug.*
+
+# 多语言修复报告（保留在版本控制中）
+# 多语言修复报告.md
+
+# ===========================================
 # 其他常见忽略文件
 # ===========================================
 # Archives
