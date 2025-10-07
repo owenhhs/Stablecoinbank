@@ -14,15 +14,15 @@
       <a-avatar style="margin: 0 5px" :size="24" id="smartAdminAvatar">
         {{ avatarName }}
       </a-avatar>
-      <span class="name">{{ actualName }}</span>
+      <span class="name">{{ displayName }}</span>
     </div>
     <template #overlay>
       <a-menu :class="['avatar-menu']">
         <a-menu-item @click="showUpdatePwdModal">
-          <span>修改密码</span>
+          <span>{{ $t('header.changePassword') }}</span>
         </a-menu-item>
         <a-menu-item @click="onLogout">
-          <span>退出登录</span>
+          <span>{{ $t('header.logout') }}</span>
         </a-menu-item>
       </a-menu>
     </template>
@@ -31,11 +31,14 @@
 </template>
 <script setup>
   import { computed, ref, onMounted } from 'vue';
+  import { useI18n } from 'vue-i18n';
   import { loginApi } from '/src/api/system/login-api';
   import { useUserStore } from '/@/store/modules/system/user';
   import { localClear } from '/@/utils/local-util';
   import { smartSentry } from '/@/lib/smart-sentry';
   import HeaderResetPassword from './header-reset-password-modal/index.vue';
+
+  const { t, locale } = useI18n();
 
   // 头像背景颜色
   const AVATAR_BACKGROUND_COLOR_ARRAY = ['#87d068', '#00B853', '#f56a00', '#1890ff'];
@@ -64,6 +67,19 @@
 
   const avatarName = ref('');
   const actualName = computed(() => useUserStore().actualName);
+  
+  // 根据当前语言显示用户名
+  const displayName = computed(() => {
+    const name = actualName.value;
+    if (!name) return '';
+    
+    // 如果是英文用户名，根据当前语言返回对应翻译
+    if (name === 'Administrator') {
+      return locale.value === 'zh_CN' ? t('common.administrator') : name;
+    }
+    
+    return name;
+  });
   // 更新头像信息
   function updateAvatar() {
     if (useUserStore().actualName) {

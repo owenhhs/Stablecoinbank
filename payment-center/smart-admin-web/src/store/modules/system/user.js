@@ -96,7 +96,7 @@ export const useUserStore = defineStore({
       let tagNavList = _.cloneDeep(state.tagNav) || [];
       tagNavList.unshift({
         menuName: HOME_PAGE_NAME,
-        menuTitle: '首页',
+        menuTitle: 'common.homepage',
       });
       return tagNavList;
     },

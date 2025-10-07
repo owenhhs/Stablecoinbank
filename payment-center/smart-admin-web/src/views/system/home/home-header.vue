@@ -20,62 +20,65 @@
       <a-row class="content">
         <span class="left-content">
           <p class="last-login-info"><AlertOutlined />{{ lastLoginInfo }}</p>
-          <a class="sentence" href="https://zhuoda.vip/soup" target="_blank"> <smile-outlined spin /> {{ heartSentence }} </a>
         </span>
-        <div class="weather">
-          <iframe
-            width="100%"
-            scrolling="no"
-            height="50"
-            frameborder="0"
-            allowtransparency="true"
-            src="//i.tianqi.com/index.php?c=code&id=12&icon=1&num=3&site=12"
-          ></iframe>
-        </div>
       </a-row>
     </a-page-header>
   </div>
 </template>
 <script setup>
   import { computed } from 'vue';
+  import { useI18n } from 'vue-i18n';
   import { useUserStore } from '/@/store/modules/system/user';
   import uaparser from 'ua-parser-js';
   import { Solar, Lunar } from 'lunar-javascript';
-  import _ from 'lodash';
-  import heartSentenceArray from './heart-sentence';
+
+  const { t, locale } = useI18n();
 
   const userStore = useUserStore();
 
   const departmentName = computed(() => userStore.departmentName);
+
+  // 根据当前语言显示用户名
+  const displayName = computed(() => {
+    const name = userStore.$state.actualName;
+    if (!name) return '';
+    
+    // 如果是英文用户名，根据当前语言返回对应翻译
+    if (name === 'Administrator') {
+      return locale.value === 'zh_CN' ? t('common.administrator') : name;
+    }
+    
+    return name;
+  });
 
   // 欢迎语
   const welcomeSentence = computed(() => {
     let sentence = '';
     let now = new Date().getHours();
     if (now > 0 && now <= 6) {
-      sentence = '午夜好，';
+      sentence = t('home.greeting.midnight');
     } else if (now > 6 && now <= 11) {
-      sentence = '早上好，';
+      sentence = t('home.greeting.morning');
     } else if (now > 11 && now <= 14) {
-      sentence = '中午好，';
+      sentence = t('home.greeting.afternoon');
     } else if (now > 14 && now <= 18) {
-      sentence = '下午好，';
+      sentence = t('home.greeting.evening');
     } else {
-      sentence = '晚上好，';
+      sentence = t('home.greeting.night');
     }
-    return sentence + userStore.$state.actualName;
+    return sentence + displayName.value;
   });
 
   //上次登录信息
   const lastLoginInfo = computed(() => {
     let info = '';
     if (userStore.$state.lastLoginTime) {
-      info = info + '上次登录:' + userStore.$state.lastLoginTime;
+      info = info + t('home.lastLogin') + ': ' + userStore.$state.lastLoginTime;
     }
 
     if (userStore.$state.lastLoginUserAgent) {
       let ua = uaparser(userStore.$state.lastLoginUserAgent);
-      info = info + '; 设备:';
+      info = info + '; ' + t('home.device') + ':';
       if (ua.browser.name) {
         info = info + ' ' + ua.browser.name;
       }
@@ -102,23 +105,43 @@
     //阳历
     let solar = Solar.fromDate(new Date());
     let day = solar.toString();
-    let week = solar.getWeekInChinese();
+    
+    // 根据当前语言获取星期信息
+    let week;
+    if (locale.value === 'zh_CN') {
+      week = solar.getWeekInChinese();
+    } else {
+      const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      week = weekDays[solar.getWeek()];
+    }
+    
     //阴历
     let lunar = Lunar.fromDate(new Date());
-    let lunarMonth = lunar.getMonthInChinese();
-    let lunarDay = lunar.getDayInChinese();
+    let lunarMonth, lunarDay;
+    if (locale.value === 'zh_CN') {
+      lunarMonth = lunar.getMonthInChinese();
+      lunarDay = lunar.getDayInChinese();
+    } else {
+      lunarMonth = lunar.getMonth();
+      lunarDay = lunar.getDay();
+    }
+    
     //节气
-    let jieqi = lunar.getPrevJieQi().getName();
-    let next = lunar.getNextJieQi();
-    let nextJieqi = next.getName() + ' ' + next.getSolar().toYmd();
+    let jieqi, nextJieqi;
+    if (locale.value === 'zh_CN') {
+      jieqi = lunar.getPrevJieQi().getName();
+      let next = lunar.getNextJieQi();
+      nextJieqi = next.getName() + ' ' + next.getSolar().toYmd();
+    } else {
+      // 对于英文，简化节气显示
+      jieqi = 'Solar Term';
+      let next = lunar.getNextJieQi();
+      nextJieqi = 'Next: ' + next.getSolar().toYmd();
+    }
 
-    return `${day} 星期${week}，农历${lunarMonth}${lunarDay}（当前${jieqi}，${nextJieqi} ）`;
+    return t('home.dateInfo', { day, week, lunarMonth, lunarDay, jieqi, nextJieqi });
   });
 
-  // 毒鸡汤
-  const heartSentence = computed(() => {
-    return heartSentenceArray[_.random(0, heartSentenceArray.length - 1)];
-  });
 </script>
 <style scoped lang="less">
   .user-header {
@@ -135,10 +158,7 @@
 
     .content {
       display: flex;
-      justify-content: space-between;
-      .weather {
-        width: 400px;
-      }
+      justify-content: flex-start;
     }
 
     .last-login-info {
@@ -149,17 +169,5 @@
       margin: 1px 0 0 0;
     }
 
-    .sentence {
-      display: block;
-      font-size: 12px;
-      color: #acacac;
-      overflow-wrap: break-word;
-      padding: 5px 0 0 0;
-      margin: 6px 0 0 0;
-    }
-    .sentence:hover {
-      cursor: pointer;
-      text-decoration: underline;
-    }
   }
 </style>
