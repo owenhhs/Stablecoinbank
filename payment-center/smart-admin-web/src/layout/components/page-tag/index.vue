@@ -16,7 +16,7 @@
           <a-tab-pane v-for="item in tagNav" :key="item.menuName">
             <template #tab>
               <span>
-                {{ getMenuI18nName(item.menuTitle, $i18n.locale.value) }}
+                {{ getDisplayTitle(item.menuTitle) }}
                 <close-outlined @click.stop="closeTag(item, false)" v-if="item.menuName !== HOME_PAGE_NAME" class="smart-page-tag-close" />
               </span>
             </template>
@@ -52,11 +52,27 @@
   import { AppstoreOutlined, CloseOutlined } from '@ant-design/icons-vue';
   import { computed, ref, watch } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
+  import { useI18n } from 'vue-i18n';
   import { HOME_PAGE_NAME } from '/@/constants/system/home-const';
   import { useAppConfigStore } from '/@/store/modules/system/app-config';
   import { useUserStore } from '/@/store/modules/system/user';
   import { theme } from 'ant-design-vue';
   import { getMenuI18nName } from '/@/constants/menu-i18n';
+
+  const { t, locale } = useI18n();
+
+  // 获取显示标题的函数
+  function getDisplayTitle(menuTitle) {
+    if (!menuTitle) return '';
+    
+    // 如果是国际化键（包含点号），使用$t函数
+    if (menuTitle.includes('.')) {
+      return t(menuTitle);
+    }
+    
+    // 否则使用菜单国际化函数
+    return getMenuI18nName(menuTitle, locale.value);
+  }
 
   //标签页 是否显示
   const pageTagFlag = computed(() => useAppConfigStore().$state.pageTagFlag);

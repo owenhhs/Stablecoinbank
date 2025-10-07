@@ -9,16 +9,32 @@
 -->
 <template>
   <a-breadcrumb separator=">" v-if="breadCrumbFlag" class="breadcrumb">
-    <a-breadcrumb-item v-for="(item, index) in parentMenuList" :key="index">{{ getMenuI18nName(item.title, $i18n.locale.value) }}</a-breadcrumb-item>
-    <a-breadcrumb-item>{{ $t(currentRoute.meta.title) }}</a-breadcrumb-item>
+    <a-breadcrumb-item v-for="(item, index) in parentMenuList" :key="index">{{ getDisplayTitle(item.title) }}</a-breadcrumb-item>
+    <a-breadcrumb-item>{{ getDisplayTitle(currentRoute.meta.title) }}</a-breadcrumb-item>
   </a-breadcrumb>
 </template>
 <script setup>
   import { useRoute } from 'vue-router';
   import { useUserStore } from '/@/store/modules/system/user';
   import { computed } from 'vue';
+  import { useI18n } from 'vue-i18n';
   import { useAppConfigStore } from '/@/store/modules/system/app-config';
   import { getMenuI18nName } from '/@/constants/menu-i18n';
+
+  const { t, locale } = useI18n();
+
+  // 获取显示标题的函数
+  function getDisplayTitle(title) {
+    if (!title) return '';
+    
+    // 如果是国际化键（包含点号），使用$t函数
+    if (title.includes('.')) {
+      return t(title);
+    }
+    
+    // 否则使用菜单国际化函数
+    return getMenuI18nName(title, locale.value);
+  }
 
   // 是否显示面包屑
   const breadCrumbFlag = computed(() =>  useAppConfigStore().$state.breadCrumbFlag);
