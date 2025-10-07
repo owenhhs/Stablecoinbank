@@ -9,8 +9,8 @@
 -->
 <template>
   <a-breadcrumb separator=">" v-if="breadCrumbFlag" class="breadcrumb">
-    <a-breadcrumb-item v-for="(item, index) in parentMenuList" :key="index">{{ item.title }}</a-breadcrumb-item>
-    <a-breadcrumb-item>{{ currentRoute.meta.title }}</a-breadcrumb-item>
+    <a-breadcrumb-item v-for="(item, index) in parentMenuList" :key="index">{{ getMenuI18nName(item.title, $i18n.locale.value) }}</a-breadcrumb-item>
+    <a-breadcrumb-item>{{ $t(currentRoute.meta.title) }}</a-breadcrumb-item>
   </a-breadcrumb>
 </template>
 <script setup>
@@ -18,6 +18,7 @@
   import { useUserStore } from '/@/store/modules/system/user';
   import { computed } from 'vue';
   import { useAppConfigStore } from '/@/store/modules/system/app-config';
+  import { getMenuI18nName } from '/@/constants/menu-i18n';
 
   // 是否显示面包屑
   const breadCrumbFlag = computed(() =>  useAppConfigStore().$state.breadCrumbFlag);

@@ -116,7 +116,7 @@ export function buildRoutes(menuRouterList) {
         id: e.menuId.toString(),
         // 组件名称
         componentName: e.menuId.toString(),
-        // 菜单展示
+        // 菜单展示 - 使用原始菜单名称，由组件动态处理国际化
         title: e.menuName,
         // 菜单图标展示
         icon: e.icon,

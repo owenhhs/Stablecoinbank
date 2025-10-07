@@ -14,6 +14,7 @@ import { HOME_PAGE_NAME } from '/@/constants/system/home-const';
 import { MENU_TYPE_ENUM } from '/@/constants/system/menu-const';
 import { localClear, localRead, localSave } from '/@/utils/local-util';
 import LocalStorageKeyConst from '/@/constants/local-storage-key-const';
+import { getMenuI18nName } from '/@/constants/menu-i18n';
 
 export const useUserStore = defineStore({
   id: 'userStore',
@@ -133,7 +134,9 @@ export const useUserStore = defineStore({
       this.menuRouterList = data.menuList.filter((e) => e.path || e.frameUrl);
 
       //父级菜单集合
-      this.menuParentIdListMap = buildMenuParentIdListMap(this.menuTree);
+      // 获取当前语言设置
+      const currentLocale = localStorage.getItem('language') || 'en_US';
+      this.menuParentIdListMap = buildMenuParentIdListMap(this.menuTree, currentLocale);
 
       //功能点
       this.pointsList = data.menuList.filter((menu) => menu.menuType === MENU_TYPE_ENUM.POINTS.value && menu.visibleFlag && !menu.disabledFlag);
@@ -255,13 +258,13 @@ export const useUserStore = defineStore({
 /**
  * 构建菜单父级集合
  */
-function buildMenuParentIdListMap(menuTree) {
+function buildMenuParentIdListMap(menuTree, locale = 'en_US') {
   let menuParentIdListMap = new Map();
-  recursiveBuildMenuParentIdListMap(menuTree, [], menuParentIdListMap);
+  recursiveBuildMenuParentIdListMap(menuTree, [], menuParentIdListMap, locale);
   return menuParentIdListMap;
 }
 
-function recursiveBuildMenuParentIdListMap(menuList, parentMenuList, menuParentIdListMap) {
+function recursiveBuildMenuParentIdListMap(menuList, parentMenuList, menuParentIdListMap, locale = 'en_US') {
   for (const e of menuList) {
     // 顶级parentMenuList清空
     if (e.parentId === 0) {
@@ -270,9 +273,9 @@ function recursiveBuildMenuParentIdListMap(menuList, parentMenuList, menuParentI
     let menuIdStr = e.menuId.toString();
     let cloneParentMenuList = _.cloneDeep(parentMenuList);
     if (!_.isEmpty(e.children) && e.menuName) {
-      // 递归
-      cloneParentMenuList.push({ name: menuIdStr, title: e.menuName });
-      recursiveBuildMenuParentIdListMap(e.children, cloneParentMenuList, menuParentIdListMap);
+      // 递归，使用国际化菜单名称
+      cloneParentMenuList.push({ name: menuIdStr, title: getMenuI18nName(e.menuName, locale) });
+      recursiveBuildMenuParentIdListMap(e.children, cloneParentMenuList, menuParentIdListMap, locale);
     } else {
       menuParentIdListMap.set(menuIdStr, cloneParentMenuList);
     }

@@ -16,7 +16,7 @@
           <a-tab-pane v-for="item in tagNav" :key="item.menuName">
             <template #tab>
               <span>
-                {{ item.menuTitle }}
+                {{ getMenuI18nName(item.menuTitle, $i18n.locale.value) }}
                 <close-outlined @click.stop="closeTag(item, false)" v-if="item.menuName !== HOME_PAGE_NAME" class="smart-page-tag-close" />
               </span>
             </template>
@@ -25,8 +25,8 @@
       </div>
       <template #rightExtra>
         <a-menu>
-          <a-menu-item @click="closeByMenu(false)">关闭其他</a-menu-item>
-          <a-menu-item @click="closeByMenu(true)">关闭所有</a-menu-item>
+          <a-menu-item @click="closeByMenu(false)">{{ $t('pageTag.closeOthers') }}</a-menu-item>
+          <a-menu-item @click="closeByMenu(true)">{{ $t('pageTag.closeAll') }}</a-menu-item>
         </a-menu>
       </template>
     </a-dropdown>
@@ -40,8 +40,8 @@
       </div>
       <template #overlay>
         <a-menu>
-          <a-menu-item @click="closeByMenu(false)">关闭其他</a-menu-item>
-          <a-menu-item @click="closeByMenu(true)">关闭所有</a-menu-item>
+          <a-menu-item @click="closeByMenu(false)">{{ $t('pageTag.closeOthers') }}</a-menu-item>
+          <a-menu-item @click="closeByMenu(true)">{{ $t('pageTag.closeAll') }}</a-menu-item>
         </a-menu>
       </template>
     </a-dropdown>
@@ -56,6 +56,7 @@
   import { useAppConfigStore } from '/@/store/modules/system/app-config';
   import { useUserStore } from '/@/store/modules/system/user';
   import { theme } from 'ant-design-vue';
+  import { getMenuI18nName } from '/@/constants/menu-i18n';
 
   //标签页 是否显示
   const pageTagFlag = computed(() => useAppConfigStore().$state.pageTagFlag);
